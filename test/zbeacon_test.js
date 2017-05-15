@@ -20,8 +20,8 @@ describe('ZBeacon', () => {
     });
   });
 
-  describe('startBroadcast()', () => {
-    it('should start broadcasting the zre beacon', (done) => {
+  describe('startListening(), startBroadcast(), stop()', () => {
+    it('should start broadcasting the zre beacon, listen to foreign beacons and stop when a beacon is received', (done) => {
       const id = Buffer.alloc(16);
       uuid.v4(null, id, 0);
       const zyrePeer = new ZyrePeer();

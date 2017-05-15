@@ -8,4 +8,18 @@ describe('ZyrePeer', () => {
       assert.instanceOf(zyrePeer, ZyrePeer);
     });
   });
+
+  describe('push()', () => {
+    it('should add an object to the peers object', () => {
+      const zyrePeer = new ZyrePeer();
+      const obj = {
+        beacon: {
+          address: '1.2.3.4',
+          port: 12345,
+        },
+      };
+      zyrePeer.push('foo', 'beacon', obj);
+      assert.isDefined(zyrePeer.peers.foo.lastSeen);
+    });
+  });
 });
