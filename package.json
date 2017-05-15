@@ -1,0 +1,42 @@
+{
+  "name": "zre",
+  "version": "0.1.0",
+  "description": "Implementation of ZRE (http://rfc.zeromq.org/spec:36/ZRE) in node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/interpretor/zyre.js.git"
+  },
+  "keywords": [
+    "zyre",
+    "zre",
+    "zeromq",
+    "zmq",
+    "libzmq",
+    "p2p",
+    "peer"
+  ],
+  "author": "Sebastian Rager <mail@interpretor.net>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/interpretor/zyre.js/issues"
+  },
+  "homepage": "https://github.com/interpretor/zyre.js#readme",
+  "dependencies": {
+    "debug": "^2.6.6",
+    "uuid": "^3.0.1",
+    "zeromq": "^4.2.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.3",
+    "mocha": "^3.4.1"
+  }
+}
