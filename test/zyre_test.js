@@ -1,11 +1,9 @@
 const assert = require('chai').assert;
-const zyre = require('../lib/zyre');
+const zre = require('../lib/zyre');
 
 describe('Zyre', () => {
-  describe('new()', () => {
-    it('should create a new instance of Zyre', () => {
-      const zyre1 = zyre.new({ name: 'testName' });
-      assert.equal(zyre1.name, 'testName');
-    });
+  it('should create a new instance of Zyre', () => {
+    const zyre = zre.new({ name: 'testName' });
+    assert.equal(zyre.getName(), 'testName');
   });
 });
