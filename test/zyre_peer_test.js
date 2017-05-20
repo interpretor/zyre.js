@@ -3,36 +3,27 @@ const ZyrePeer = require('../lib/zyre_peer');
 
 describe('ZyrePeer', () => {
   it('should create an instance of ZyrePeer', () => {
-    const zyrePeer = new ZyrePeer();
+    const zyrePeer = new ZyrePeer({
+      identity: '12345',
+      address: '0.0.0.0',
+      mailbox: 54321,
+    });
+
     assert.instanceOf(zyrePeer, ZyrePeer);
   });
 
-  it('should add an object to the peers object', () => {
-    const zyrePeer = new ZyrePeer();
-    const obj = {
-      address: '1.2.3.4',
-      port: 12345,
-    };
-    zyrePeer.push('foo', 'beacon', obj);
-    assert.isDefined(zyrePeer.getPeer('foo'));
-    assert.isDefined(zyrePeer.getPeers().foo);
-  });
-
-  it('should mark an evasive object as evasive', function mocha(done) {
+  it('should mark an evasive peer', function (done) {
     // Set higher timeout to test evasive peers
     this.timeout(6000);
 
-    const zyrePeer = new ZyrePeer();
-    const obj = {
-      address: '1.2.3.4.',
-      port: 12345,
-    };
-    zyrePeer.push('foo', 'beacon', obj);
+    const identity = '12345';
+    const zyrePeer = new ZyrePeer({
+      identity,
+      address: '0.0.0.0',
+      mailbox: 54321,
+    });
 
-    zyrePeer.on('evasive', (id, peer) => {
-      assert.equal(id, 'foo');
-      assert.deepEqual(peer.beacon, obj);
-      assert.equal(peer.evasive, true);
+    zyrePeer.on('evasive', () => {
       done();
     });
   });
