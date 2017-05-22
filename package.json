@@ -1,7 +1,7 @@
 {
-  "name": "zre",
-  "version": "0.1.0",
-  "description": "Implementation of ZRE (http://rfc.zeromq.org/spec:36/ZRE) in node.js",
+  "name": "zyre.js",
+  "version": "0.1.1",
+  "description": "Node.js port of Zyre - an open-source framework for proximity-based peer-to-peer applications",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -17,7 +17,8 @@
     "zmq",
     "libzmq",
     "p2p",
-    "peer"
+    "peer",
+    "peer-to-peer"
   ],
   "author": "Sebastian Rager <mail@interpretor.net>",
   "license": "MPL-2.0",
