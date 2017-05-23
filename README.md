@@ -14,6 +14,10 @@ This project is currently in development and not considered stable yet.
 npm install zyre.js
 ```
 
+## Documentation
+
+A jsdoc documentation can be found [here](https://interpretor.github.io/zyre.js/)
+
 ## Examples
 
 ```js
