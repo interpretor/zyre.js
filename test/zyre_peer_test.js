@@ -13,8 +13,6 @@ describe('ZyrePeer', () => {
   it('should create an instance of ZyrePeer', () => {
     const zyrePeer = new ZyrePeer({
       identity: '12345',
-      address: '0.0.0.0',
-      mailbox: 54321,
     });
 
     assert.instanceOf(zyrePeer, ZyrePeer);
@@ -24,9 +22,11 @@ describe('ZyrePeer', () => {
     // Set higher timeout to test evasive peers
     this.timeout(6000);
 
-    const identity = '12345';
     const zyrePeer = new ZyrePeer({
-      identity,
+      identity: '12345',
+    });
+
+    zyrePeer.update({
       address: '0.0.0.0',
       mailbox: 54321,
     });
