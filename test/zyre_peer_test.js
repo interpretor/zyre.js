@@ -27,8 +27,7 @@ describe('ZyrePeer', () => {
     });
 
     zyrePeer.update({
-      address: '0.0.0.0',
-      mailbox: 54321,
+      sequence: 1,
     });
 
     zyrePeer.on('evasive', () => {
