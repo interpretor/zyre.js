@@ -11,7 +11,136 @@ const ZreMsg = require('../lib/zre_msg');
 
 describe('ZreMsg', () => {
   it('should create an instance of ZreMsg', () => {
-    const zreMsg = new ZreMsg(6, { sequence: 1 });
+    const zreMsg = new ZreMsg(ZreMsg.PING);
     assert.instanceOf(zreMsg, ZreMsg);
+  });
+
+  it('should create a new HELLO message and validate the output buffer', () => {
+    const sequence = 2;
+    const endpoint = 'tcp://127.0.0.1:50100';
+    const groups = ['CHAT', 'TEST'];
+    const status = 2;
+    const name = 'node';
+    const headers = {
+      head1: 'head',
+      test: 'two',
+    };
+
+    const zreMsg = new ZreMsg(ZreMsg.HELLO, {
+      sequence,
+      endpoint,
+      groups,
+      status,
+      name,
+      headers,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getEndpoint(), endpoint);
+    assert.sameMembers(recvMsg.getGroups(), groups);
+    assert.equal(recvMsg.getStatus(), status);
+    assert.equal(recvMsg.getName(), name);
+    assert.deepEqual(recvMsg.getHeaders(), headers);
+  });
+
+  it('should create a new WHISPER message and validate the output buffer', () => {
+    const sequence = 3;
+    const content = 'Hello World!';
+
+    const zreMsg = new ZreMsg(ZreMsg.WHISPER, {
+      sequence,
+      content,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer(), content);
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.WHISPER);
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getContent(), content);
+  });
+
+  it('should create a new SHOUT message and validate the output buffer', () => {
+    const sequence = 4;
+    const group = 'CHAT';
+    const content = 'Hello World!';
+
+    const zreMsg = new ZreMsg(ZreMsg.SHOUT, {
+      sequence,
+      group,
+      content,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer(), content);
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.SHOUT);
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getGroup(), group);
+    assert.equal(recvMsg.getContent(), content);
+  });
+
+  it('should create a new JOIN message and validate the output buffer', () => {
+    const sequence = 5;
+    const group = 'TEST';
+    const status = 1;
+
+    const zreMsg = new ZreMsg(ZreMsg.JOIN, {
+      sequence,
+      group,
+      status,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.JOIN);
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getGroup(), group);
+    assert.equal(recvMsg.getStatus(), status);
+  });
+
+  it('should create a new LEAVE message and validate the output buffer', () => {
+    const sequence = 6;
+    const group = 'PEERS';
+    const status = 1;
+
+    const zreMsg = new ZreMsg(ZreMsg.LEAVE, {
+      sequence,
+      group,
+      status,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.LEAVE);
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getGroup(), group);
+    assert.equal(recvMsg.getStatus(), status);
+  });
+
+  it('should create a new PING message and validate the output buffer', () => {
+    const sequence = 7;
+
+    const zreMsg = new ZreMsg(ZreMsg.PING, {
+      sequence,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.PING);
+    assert.equal(recvMsg.getSequence(), sequence);
+  });
+
+  it('should create a new PING_OK message and validate the output buffer', () => {
+    const sequence = 8;
+
+    const zreMsg = new ZreMsg(ZreMsg.PING_OK, {
+      sequence,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.PING_OK);
+    assert.equal(recvMsg.getSequence(), sequence);
   });
 });

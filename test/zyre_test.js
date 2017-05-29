@@ -19,14 +19,14 @@ describe('Zyre', () => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
-    z1.on('message', (name, message, group) => {
+    z1.on('message', (id, name, message, group) => {
       assert.equal(name, 'z2');
       assert.equal(message, 'Hello World!');
       assert.equal(group, 'CHAT');
       z1.shout('CHAT', 'Hey!');
     });
 
-    z2.on('message', (name, message, group) => {
+    z2.on('message', (id, name, message, group) => {
       assert.equal(name, 'z1');
       assert.equal(message, 'Hey!');
       assert.equal(group, 'CHAT');

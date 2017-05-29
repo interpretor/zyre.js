@@ -16,38 +16,49 @@ describe('ZBeacon', () => {
   it('should create an instance of ZBeacon', () => {
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
+
     const zBeacon = new ZBeacon({
       identity,
+      address: ZHelper.getIfData().address,
       mailbox: 51409,
-      ifaceData: ZHelper.getIfData(),
-      zyrePeers: new ZyrePeers(),
+      zyrePeers: new ZyrePeers(identity),
     });
 
     assert.instanceOf(zBeacon, ZBeacon);
   });
 
-  it('should start broadcasting the zre beacon, listen to foreign beacons and stop when a beacon is received', (done) => {
+  it('should start broadcasting the zre beacon, listen to foreign beacons and push discovered peers', (done) => {
+    const address = ZHelper.getIfData().address;
+
+    // Peer 1
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
-    const zyrePeers = new ZyrePeers();
+
+    const zyrePeers = new ZyrePeers(identity);
+
     const zBeacon = new ZBeacon({
       identity,
+      address,
       mailbox: 51409,
-      ifaceData: ZHelper.getIfData(),
       zyrePeers,
     });
 
+    // Peer 2
     const identity2 = Buffer.alloc(16);
     uuid.v4(null, identity2, 0);
+
+    const mailbox2 = 51410;
+
     const zBeacon2 = new ZBeacon({
       identity: identity2,
-      mailbox: 51410,
-      ifaceData: ZHelper.getIfData(),
-      zyrePeers: new ZyrePeers(),
+      address,
+      mailbox: mailbox2,
+      zyrePeers: new ZyrePeers(identity2),
     });
 
     zyrePeers.on('new', (peer) => {
-      assert.equal(peer._identity, identity2.toString('hex'));
+      assert.equal(peer.getIdentity(), identity2.toString('hex'));
+      assert.equal(peer._endpoint, `tcp://${address}:${mailbox2}`);
       zBeacon.stop();
       zBeacon2.stop();
       done();

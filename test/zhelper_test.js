@@ -20,4 +20,13 @@ describe('ZHelper', () => {
     assert.propertyVal(ifdata, 'family', 'IPv4');
     assert.property(ifdata, 'broadcast');
   });
+
+  it('should return a free TCP port', (done) => {
+    const ifdata = ZHelper.getIfData();
+    const p = 49152;
+    ZHelper.getFreePort(ifdata.address, p).then((port) => {
+      assert.isAtLeast(port, p);
+      done();
+    });
+  });
 });
