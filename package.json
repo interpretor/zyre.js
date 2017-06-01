@@ -31,10 +31,10 @@
     "debug": "^2.6.8",
     "tcp-port-used": "^0.1.2",
     "uuid": "^3.0.1",
-    "zeromq": "^4.2.2"
+    "zeromq": "^4.2.3"
   },
   "devDependencies": {
-    "chai": "^4.0.0",
+    "chai": "^4.0.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
