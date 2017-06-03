@@ -17,7 +17,7 @@ describe('ZyreGroup', () => {
     assert.instanceOf(zyreGroup, ZyreGroup);
   });
 
-  describe('add/remove', () => {
+  it('should add a new ZyrePeer to the ZyreGroup', () => {
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
 
@@ -31,15 +31,27 @@ describe('ZyreGroup', () => {
     const zyreGroup = new ZyreGroup(groups[0]);
     zyreGroup.add(zyrePeer);
 
-    it('should add a new ZyrePeer to the ZyreGroup', () => {
-      assert.sameMembers(zyreGroup.toObj().qwertz.groups, groups);
+    assert.sameMembers(zyreGroup.toObj().qwertz.groups, groups);
+  });
+
+  it('should remove a ZyrePeer from the ZyreGroup', () => {
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
+    const zyrePeer = new ZyrePeer({
+      identity: 'qwertz',
+      originID: identity,
     });
 
-    it('should remove a ZyrePeer from the ZyreGroup', () => {
-      zyreGroup.remove(zyrePeer);
-      assert.deepEqual(zyreGroup.toObj(), {});
-      assert.deepEqual(zyrePeer._groups, {});
-    });
+    const groups = ['TEST'];
+
+    const zyreGroup = new ZyreGroup(groups[0]);
+    zyreGroup.add(zyrePeer);
+    assert.sameMembers(zyreGroup.toObj().qwertz.groups, groups);
+
+    zyreGroup.remove(zyrePeer);
+    assert.deepEqual(zyreGroup.toObj(), {});
+    assert.deepEqual(zyrePeer._groups, {});
   });
 
   // TODO: send

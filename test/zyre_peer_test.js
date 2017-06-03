@@ -20,7 +20,7 @@ describe('ZyrePeer', () => {
 
   it('should mark an evasive peer', function (done) {
     // Set higher timeout to test evasive peers
-    this.timeout(6000);
+    this.timeout(ZyrePeer.PEER_EVASIVE + 1000);
 
     const zyrePeer = new ZyrePeer({
       identity: '12345',
@@ -31,6 +31,23 @@ describe('ZyrePeer', () => {
     });
 
     zyrePeer.on('evasive', () => {
+      done();
+    });
+  });
+
+  it('should mark an expired peer', function (done) {
+    // Set higher timeout to test expired peers
+    this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
+
+    const zyrePeer = new ZyrePeer({
+      identity: '12345',
+    });
+
+    zyrePeer.update({
+      sequence: 1,
+    });
+
+    zyrePeer.on('expired', () => {
       done();
     });
   });
