@@ -26,8 +26,8 @@ describe('Zyre', () => {
     z1.on('evasive', (id, name) => {
       assert.equal(id, z2._identity.toString('hex'));
       assert.equal(name, 'z2');
-      z1.stop().then(() => {
-        z2.stop().then(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
           done();
         });
       });
@@ -52,8 +52,8 @@ describe('Zyre', () => {
     z1.on('expired', (id, name) => {
       assert.equal(id, z2._identity.toString('hex'));
       assert.equal(name, 'z2');
-      z1.stop().then(() => {
-        z2.stop().then(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
           done();
         });
       });
@@ -79,8 +79,8 @@ describe('Zyre', () => {
     z1.on('back', (id, name) => {
       assert.equal(id, z2._identity.toString('hex'));
       assert.equal(name, 'z2');
-      z1.stop().then(() => {
-        z2.stop().then(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
           done();
         });
       });
@@ -123,8 +123,8 @@ describe('Zyre', () => {
     z1.on('connect', (id, name) => {
       assert.equal(id, z2._identity.toString('hex'));
       assert.equal(name, 'z2');
-      z1.stop().then(() => {
-        z2.stop().then(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
           done();
         });
       });
@@ -143,8 +143,8 @@ describe('Zyre', () => {
       assert.equal(id, z2._identity.toString('hex'));
       assert.equal(name, 'z2');
       assert.equal(message, 'Hey!');
-      z1.stop().then(() => {
-        z2.stop().then(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
           done();
         });
       });
@@ -200,9 +200,9 @@ describe('Zyre', () => {
     }, 100);
 
     setTimeout(() => {
-      z1.stop().then(() => {
+      z3.stop().then(() => {
         z2.stop().then(() => {
-          z3.stop().then(() => {
+          z1.stop().then(() => {
             done();
           });
         });
