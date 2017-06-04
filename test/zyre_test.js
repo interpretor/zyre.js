@@ -218,6 +218,7 @@ describe('Zyre', () => {
       assert.equal(id, z1._identity.toString('hex'));
       assert.equal(name, 'z1');
       assert.equal(group, 'CHAT');
+      assert.property(z2.getGroup('CHAT'), z1._identity.toString('hex'));
       z1.stop().then(() => {
         z2.stop().then(() => {
           done();
@@ -242,6 +243,7 @@ describe('Zyre', () => {
       assert.equal(id, z1._identity.toString('hex'));
       assert.equal(name, 'z1');
       assert.equal(group, 'CHAT');
+      assert.deepEqual(z2.getGroup('CHAT'), {});
       z1.stop().then(() => {
         z2.stop().then(() => {
           done();
@@ -255,7 +257,10 @@ describe('Zyre', () => {
 
     setTimeout(() => {
       z1.join('CHAT');
-      z1.leave('CHAT');
     }, 100);
+
+    setTimeout(() => {
+      z1.leave('CHAT');
+    }, 200);
   });
 });
