@@ -16,23 +16,27 @@ npm install zyre.js
 
 ## Documentation
 
-A jsdoc documentation can be found [here](https://interpretor.github.io/zyre.js/)
+A jsdoc documentation can be found [here](https://interpretor.github.io/zyre.js/).
 
 ## Examples
+
+There is a sample chat package, that can be found [here](https://github.com/interpretor/zyre-chat).
+
+Inline example of two nodes talking to each other:
 
 ```js
 const zyre = require('zyre.js');
 
-const z1 = zyre.new();
-const z2 = zyre.new();
+const z1 = zyre.new({ name: 'z1' });
+const z2 = zyre.new({ name: 'z2' });
 
-z1.on('message', (name, message, group) => {
+z1.on('shout', (id, name, message, group) => {
   console.log(`#${group} <${name}> ${message}`);
-  z1.shout('CHAT', 'Hey!');
 });
 
-z2.on('message', (name, message, group) => {
+z2.on('shout', (id, name, message, group) => {
   console.log(`#${group} <${name}> ${message}`);
+  z2.shout('CHAT', 'Hey!');
 });
 
 z1.start().then(() => {
@@ -43,6 +47,6 @@ z1.start().then(() => {
 });
 
 setInterval(() => {
-  z2.shout('CHAT', 'Hello World!');
+  z1.shout('CHAT', 'Hello World!');
 }, 1000);
 ```
