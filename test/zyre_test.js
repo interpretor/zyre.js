@@ -171,11 +171,15 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
     const z3 = zyre.new({ name: 'z3' });
 
+    let hit1 = false;
+    let hit2 = false;
+
     z2.on('shout', (id, name, message, group) => {
       assert.equal(id, z1._identity.toString('hex'));
       assert.equal(name, 'z1');
       assert.equal(message, 'Hello World!');
       assert.equal(group, 'CHAT');
+      hit1 = true;
     });
 
     z3.on('shout', (id, name, message, group) => {
@@ -183,6 +187,7 @@ describe('Zyre', () => {
       assert.equal(name, 'z1');
       assert.equal(message, 'Hello World!');
       assert.equal(group, 'CHAT');
+      hit2 = true;
     });
 
     z1.start().then(() => {
@@ -203,7 +208,7 @@ describe('Zyre', () => {
       z3.stop().then(() => {
         z2.stop().then(() => {
           z1.stop().then(() => {
-            done();
+            if (hit1 && hit2) done();
           });
         });
       });
