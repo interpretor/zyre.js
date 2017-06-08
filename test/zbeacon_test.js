@@ -56,19 +56,27 @@ describe('ZBeacon', () => {
       zyrePeers: new ZyrePeers(identity2),
     });
 
+    let hit = false;
+
     zyrePeers.on('new', (peer) => {
       assert.equal(peer.getIdentity(), identity2.toString('hex'));
       assert.equal(peer._endpoint, `tcp://${address}:${mailbox2}`);
+      hit = true;
+    });
+
+    const stopAll = () => {
       zBeacon.stop().then(() => {
         zBeacon2.stop().then(() => {
           zyrePeers.closeAll();
-          setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    });
+    };
 
     zBeacon.startListening().then(() => {
-      zBeacon2.startBroadcasting();
+      zBeacon2.startBroadcasting().then(() => {
+        setTimeout(stopAll, 200);
+      });
     });
   });
 });
