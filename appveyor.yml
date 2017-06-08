@@ -8,6 +8,6 @@ install:
 test_script:
   - node --version
   - npm --version
-  - npm test
+  - set DEBUG=zyre* & npm test
 
 build: off
