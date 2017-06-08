@@ -7,6 +7,9 @@ matrix:
       sudo: required
       node_js: "6"
 
+script:
+  - DEBUG=zyre* npm test
+
 after_success:
   - npm run build:docs
 
