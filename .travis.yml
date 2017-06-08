@@ -6,12 +6,15 @@ matrix:
       dist: trusty
       sudo: false
       node_js: "6"
+      env: DEPLOY="true"
+    - os: osx
+      node_js: "6"
 
 script:
   - DEBUG=zyre* npm test
 
 after_success:
-  - npm run build:docs
+  - 'if [[ $DEPLOY == true ]]; then npm run build:docs; fi'
 
 deploy:
   provider: pages
@@ -20,3 +23,4 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: master
+    condition: "$DEPLOY = true"
