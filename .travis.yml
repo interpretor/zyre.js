@@ -11,10 +11,10 @@ matrix:
       node_js: "6"
 
 script:
-  - DEBUG=zyre* npm test
+  - 'DEBUG=zyre*; if [[ $DEPLOY == true ]]; then travis_retry npm run cov; else travis_retry npm test; fi'
 
 after_success:
-  - 'if [[ $DEPLOY == true ]]; then npm run build:docs; fi'
+  - 'if [[ $DEPLOY == true ]]; then npm run build:docs; bash <(curl -s https://codecov.io/bash); fi'
 
 deploy:
   provider: pages
