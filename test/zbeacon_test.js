@@ -61,7 +61,8 @@ describe('ZBeacon', () => {
       assert.equal(peer._endpoint, `tcp://${address}:${mailbox2}`);
       zBeacon.stop().then(() => {
         zBeacon2.stop().then(() => {
-          done();
+          zyrePeers.closeAll();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });

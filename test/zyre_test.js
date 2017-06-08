@@ -28,7 +28,7 @@ describe('Zyre', () => {
       assert.equal(name, 'z2');
       z2.stop().then(() => {
         z1.stop().then(() => {
-          done();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });
@@ -38,8 +38,10 @@ describe('Zyre', () => {
     });
 
     setTimeout(() => {
+      clearInterval(z1._zBeacon._broadcastTimer);
       clearInterval(z2._zBeacon._broadcastTimer);
       clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
+      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
     }, 100);
   });
 
@@ -55,7 +57,7 @@ describe('Zyre', () => {
       assert.equal(name, 'z2');
       z2.stop().then(() => {
         z1.stop().then(() => {
-          done();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });
@@ -65,8 +67,10 @@ describe('Zyre', () => {
     });
 
     setTimeout(() => {
+      clearInterval(z1._zBeacon._broadcastTimer);
       clearInterval(z2._zBeacon._broadcastTimer);
       clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
+      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
     }, 100);
 
     setTimeout(() => {
@@ -82,7 +86,7 @@ describe('Zyre', () => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       z1.stop().then(() => {
-        done();
+        setTimeout(() => { done(); }, 100);
       });
     });
 
@@ -104,7 +108,7 @@ describe('Zyre', () => {
       assert.equal(name, 'z2');
       z2.stop().then(() => {
         z1.stop().then(() => {
-          done();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });
@@ -124,7 +128,7 @@ describe('Zyre', () => {
       assert.equal(message, 'Hey!');
       z2.stop().then(() => {
         z1.stop().then(() => {
-          done();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });
@@ -187,7 +191,7 @@ describe('Zyre', () => {
       z3.stop().then(() => {
         z2.stop().then(() => {
           z1.stop().then(() => {
-            if (hit1 && hit2) done();
+            if (hit1 && hit2) setTimeout(() => { done(); }, 100);
           });
         });
       });
@@ -205,7 +209,7 @@ describe('Zyre', () => {
       assert.property(z2.getGroup('CHAT'), z1.getIdentity());
       z1.stop().then(() => {
         z2.stop().then(() => {
-          done();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });
@@ -230,7 +234,7 @@ describe('Zyre', () => {
       assert.isNotObject(z2.getGroup(name));
       z1.stop().then(() => {
         z2.stop().then(() => {
-          done();
+          setTimeout(() => { done(); }, 100);
         });
       });
     });

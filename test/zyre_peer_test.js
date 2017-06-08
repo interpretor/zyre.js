@@ -36,6 +36,7 @@ describe('ZyrePeer', () => {
     });
 
     setTimeout(() => {
+      zyrePeer._clearTimeouts();
       if (zyrePeer._evasiveAt > 0) done();
     }, ZyrePeer.PEER_EVASIVE + 100);
   });
