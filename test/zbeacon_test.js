@@ -62,7 +62,7 @@ describe('ZBeacon', () => {
       zBeacon.stop().then(() => {
         zBeacon2.stop().then(() => {
           zyrePeers.closeAll();
-          setTimeout(() => { done(); }, 100);
+          setTimeout(() => { done(); }, 200);
         });
       });
     });

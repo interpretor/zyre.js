@@ -18,7 +18,7 @@ describe('Zyre', () => {
 
   it('should inform about expired peers', function (done) {
     // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
+    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
 
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
@@ -31,31 +31,34 @@ describe('Zyre', () => {
       hit = true;
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const stopTimeouts = () => {
       clearInterval(z1._zBeacon._broadcastTimer);
       clearInterval(z2._zBeacon._broadcastTimer);
       assert.isDefined(z1.getPeer(z2.getIdentity()));
       assert.isDefined(z2.getPeer(z1.getIdentity()));
       clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
       clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
-    }, 100);
+    };
 
-    setTimeout(() => {
+    const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    }, ZyrePeer.PEER_EXPIRED + 100);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(stopTimeouts, 200);
+        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 200);
+      });
+    });
   });
 
   it('should inform about peers that are back from being expired', function (done) {
     // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
+    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
 
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
@@ -68,30 +71,34 @@ describe('Zyre', () => {
       hit = true;
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const stopTimeouts = () => {
       clearInterval(z1._zBeacon._broadcastTimer);
       clearInterval(z2._zBeacon._broadcastTimer);
       assert.isDefined(z1.getPeer(z2.getIdentity()));
       assert.isDefined(z2.getPeer(z1.getIdentity()));
       clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
       clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
-    }, 100);
+    };
 
-    setTimeout(() => {
+    const startBroadcast = () => {
       z2._zBeacon.startBroadcasting();
-    }, ZyrePeer.PEER_EXPIRED + 100);
+    };
 
-    setTimeout(() => {
+    const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    }, ZyrePeer.PEER_EXPIRED + 200);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(stopTimeouts, 200);
+        setTimeout(startBroadcast, ZyrePeer.PEER_EXPIRED + 200);
+        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 400);
+      });
+    });
   });
 
   it('should inform about disconnected peers', (done) => {
@@ -106,19 +113,22 @@ describe('Zyre', () => {
       hit = true;
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const stopZ2 = () => {
       z2.stop();
-    }, 100);
+    };
 
-    setTimeout(() => {
+    const stopAll = () => {
       z1.stop().then(() => {
-        if (hit) setTimeout(() => { done(); }, 100);
+        if (hit) setTimeout(() => { done(); }, 200);
       });
-    }, 200);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(stopZ2, 200);
+        setTimeout(stopAll, 400);
+      });
+    });
   });
 
   it('should inform about connected peers', (done) => {
@@ -133,17 +143,19 @@ describe('Zyre', () => {
       hit = true;
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    }, 100);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(stopAll, 200);
+      });
+    });
   });
 
   it('should communicate with WHISPER messages', (done) => {
@@ -166,21 +178,24 @@ describe('Zyre', () => {
       z2.whisper(z1.getIdentity(), 'Hey!');
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const whisper = () => {
       z1.whisper(z2.getIdentity(), 'Hello World!');
-    }, 100);
+    };
 
-    setTimeout(() => {
+    const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    }, 200);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(whisper, 200);
+        setTimeout(stopAll, 400);
+      });
+    });
   });
 
   it('should communicate with SHOUT messages', (done) => {
@@ -207,29 +222,31 @@ describe('Zyre', () => {
       hit2 = true;
     });
 
+    const shout = () => {
+      z1.shout('CHAT', 'Hello World!');
+    };
+
+    const stopAll = () => {
+      z3.stop().then(() => {
+        z2.stop().then(() => {
+          z1.stop().then(() => {
+            if (hit1 && hit2) setTimeout(() => { done(); }, 200);
+          });
+        });
+      });
+    };
+
     z1.start().then(() => {
       z1.join('CHAT');
       z2.start().then(() => {
         z2.join('CHAT');
         z3.start().then(() => {
           z3.join('CHAT');
+          setTimeout(shout, 200);
+          setTimeout(stopAll, 400);
         });
       });
     });
-
-    setTimeout(() => {
-      z1.shout('CHAT', 'Hello World!');
-    }, 100);
-
-    setTimeout(() => {
-      z3.stop().then(() => {
-        z2.stop().then(() => {
-          z1.stop().then(() => {
-            if (hit1 && hit2) setTimeout(() => { done(); }, 100);
-          });
-        });
-      });
-    }, 200);
   });
 
   it('should join a group and send JOIN messages', (done) => {
@@ -246,21 +263,24 @@ describe('Zyre', () => {
       hit = true;
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const join = () => {
       z1.join('CHAT');
-    }, 100);
+    };
 
-    setTimeout(() => {
+    const stopAll = () => {
       z1.stop().then(() => {
         z2.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    }, 200);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(join, 200);
+        setTimeout(stopAll, 400);
+      });
+    });
   });
 
   it('should leave a group and send LEAVE messages', (done) => {
@@ -277,24 +297,28 @@ describe('Zyre', () => {
       hit = true;
     });
 
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
+    const join = () => {
       z1.join('CHAT');
-    }, 100);
+    };
 
-    setTimeout(() => {
+    const leave = () => {
       z1.leave('CHAT');
-    }, 200);
+    };
 
-    setTimeout(() => {
+    const stopAll = () => {
       z1.stop().then(() => {
         z2.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
+          if (hit) setTimeout(() => { done(); }, 200);
         });
       });
-    }, 300);
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(join, 200);
+        setTimeout(leave, 400);
+        setTimeout(stopAll, 600);
+      });
+    });
   });
 });
