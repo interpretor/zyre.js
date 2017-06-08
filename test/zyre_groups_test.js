@@ -32,7 +32,44 @@ describe('ZyreGroups', () => {
     const groupName = 'CHAT';
 
     zyreGroups.push(groupName, zyrePeer);
-
     assert.instanceOf(zyreGroups.getGroup(groupName), ZyreGroup);
+  });
+
+  it('should remove an empty group', () => {
+    const zyreGroups = new ZyreGroups();
+
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
+    const zyrePeer = new ZyrePeer({
+      identity: 'qwertz',
+      originID: identity,
+    });
+
+    const groupName = 'CHAT';
+
+    zyreGroups.push(groupName, zyrePeer);
+    assert.instanceOf(zyreGroups.getGroup(groupName), ZyreGroup);
+
+    zyreGroups.remove(groupName, zyrePeer);
+    assert.isFalse(zyreGroups.exists(groupName));
+  });
+
+  it('should return the public groups object', () => {
+    const zyreGroups = new ZyreGroups();
+
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
+    const zyrePeer = new ZyrePeer({
+      identity: 'qwertz',
+      originID: identity,
+    });
+
+    const groupName = 'CHAT';
+
+    zyreGroups.push(groupName, zyrePeer);
+    assert.instanceOf(zyreGroups.getGroup(groupName), ZyreGroup);
+    assert.property(zyreGroups.toObj().CHAT, 'qwertz');
   });
 });

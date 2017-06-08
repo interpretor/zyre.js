@@ -54,5 +54,33 @@ describe('ZyreGroup', () => {
     assert.deepEqual(zyrePeer._groups, {});
   });
 
-  // TODO: send
+  it('should return the current amount of peers in the group', () => {
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
+    const zyrePeer = new ZyrePeer({
+      identity: 'qwertz',
+      originID: identity,
+    });
+
+    const zyreGroup = new ZyreGroup('TEST');
+    zyreGroup.add(zyrePeer);
+
+    assert.equal(zyreGroup.amountOfPeers(), 1);
+  });
+
+  it('should return the public group object', () => {
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
+    const zyrePeer = new ZyrePeer({
+      identity: 'qwertz',
+      originID: identity,
+    });
+
+    const zyreGroup = new ZyreGroup('TEST');
+    zyreGroup.add(zyrePeer);
+
+    assert.property(zyreGroup.toObj(), 'qwertz');
+  });
 });

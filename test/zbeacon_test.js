@@ -59,9 +59,11 @@ describe('ZBeacon', () => {
     zyrePeers.on('new', (peer) => {
       assert.equal(peer.getIdentity(), identity2.toString('hex'));
       assert.equal(peer._endpoint, `tcp://${address}:${mailbox2}`);
-      zBeacon.stop();
-      zBeacon2.stop();
-      done();
+      zBeacon.stop().then(() => {
+        zBeacon2.stop().then(() => {
+          done();
+        });
+      });
     });
 
     zBeacon.startListening().then(() => {
