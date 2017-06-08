@@ -16,32 +16,6 @@ describe('Zyre', () => {
     assert.instanceOf(z1, zyre);
   });
 
-  it('should inform about evasive peers', function (done) {
-    // Set higher timeout to test evasive peers
-    this.timeout(ZyrePeer.PEER_EVASIVE + 1000);
-
-    const z1 = zyre.new({ name: 'z1' });
-    const z2 = zyre.new({ name: 'z2' });
-
-    z1.on('evasive', (id, name) => {
-      assert.equal(id, z2._identity.toString('hex'));
-      assert.equal(name, 'z2');
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          done();
-        });
-      });
-    });
-
-    z1.start().then(() => {
-      z2.start();
-    });
-
-    setTimeout(() => {
-      clearInterval(z2._zBeacon._broadcastTimer);
-    }, 100);
-  });
-
   it('should inform about expired peers', function (done) {
     // Set higher timeout to test expired peers
     this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
@@ -50,7 +24,7 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
 
     z1.on('expired', (id, name) => {
-      assert.equal(id, z2._identity.toString('hex'));
+      assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       z2.stop().then(() => {
         z1.stop().then(() => {
@@ -65,19 +39,19 @@ describe('Zyre', () => {
 
     setTimeout(() => {
       clearInterval(z2._zBeacon._broadcastTimer);
-      clearTimeout(z1._zyrePeers._peers[z2._identity.toString('hex')]._evasiveTimeout);
+      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
     }, 100);
   });
 
-  it('should inform about peers that are back from being evasive', function (done) {
-    // Set higher timeout to test evasive peers
-    this.timeout(ZyrePeer.PEER_EVASIVE + 1000);
+  it('should inform about peers that are back from being expired', function (done) {
+    // Set higher timeout to test expired peers
+    this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
 
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
     z1.on('back', (id, name) => {
-      assert.equal(id, z2._identity.toString('hex'));
+      assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       z2.stop().then(() => {
         z1.stop().then(() => {
@@ -92,7 +66,12 @@ describe('Zyre', () => {
 
     setTimeout(() => {
       clearInterval(z2._zBeacon._broadcastTimer);
+      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
     }, 100);
+
+    setTimeout(() => {
+      z2._zBeacon.startBroadcasting();
+    }, ZyrePeer.PEER_EXPIRED + 100);
   });
 
   it('should inform about disconnected peers', (done) => {
@@ -100,7 +79,7 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
 
     z1.on('disconnect', (id, name) => {
-      assert.equal(id, z2._identity.toString('hex'));
+      assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       z1.stop().then(() => {
         done();
@@ -121,7 +100,7 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
 
     z1.on('connect', (id, name) => {
-      assert.equal(id, z2._identity.toString('hex'));
+      assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       z2.stop().then(() => {
         z1.stop().then(() => {
@@ -140,7 +119,7 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
 
     z1.on('whisper', (id, name, message) => {
-      assert.equal(id, z2._identity.toString('hex'));
+      assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       assert.equal(message, 'Hey!');
       z2.stop().then(() => {
@@ -151,10 +130,10 @@ describe('Zyre', () => {
     });
 
     z2.on('whisper', (id, name, message) => {
-      assert.equal(id, z1._identity.toString('hex'));
+      assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(message, 'Hello World!');
-      z2.whisper(z1._identity.toString('hex'), 'Hey!');
+      z2.whisper(z1.getIdentity(), 'Hey!');
     });
 
     z1.start().then(() => {
@@ -162,7 +141,7 @@ describe('Zyre', () => {
     });
 
     setTimeout(() => {
-      z1.whisper(z2._identity.toString('hex'), 'Hello World!');
+      z1.whisper(z2.getIdentity(), 'Hello World!');
     }, 100);
   });
 
@@ -175,7 +154,7 @@ describe('Zyre', () => {
     let hit2 = false;
 
     z2.on('shout', (id, name, message, group) => {
-      assert.equal(id, z1._identity.toString('hex'));
+      assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(message, 'Hello World!');
       assert.equal(group, 'CHAT');
@@ -183,7 +162,7 @@ describe('Zyre', () => {
     });
 
     z3.on('shout', (id, name, message, group) => {
-      assert.equal(id, z1._identity.toString('hex'));
+      assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(message, 'Hello World!');
       assert.equal(group, 'CHAT');
@@ -220,10 +199,10 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
 
     z2.on('join', (id, name, group) => {
-      assert.equal(id, z1._identity.toString('hex'));
+      assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(group, 'CHAT');
-      assert.property(z2.getGroup('CHAT'), z1._identity.toString('hex'));
+      assert.property(z2.getGroup('CHAT'), z1.getIdentity());
       z1.stop().then(() => {
         z2.stop().then(() => {
           done();
@@ -245,10 +224,10 @@ describe('Zyre', () => {
     const z2 = zyre.new({ name: 'z2' });
 
     z2.on('leave', (id, name, group) => {
-      assert.equal(id, z1._identity.toString('hex'));
+      assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(group, 'CHAT');
-      assert.deepEqual(z2.getGroup('CHAT'), {});
+      assert.isNotObject(z2.getGroup(name));
       z1.stop().then(() => {
         z2.stop().then(() => {
           done();

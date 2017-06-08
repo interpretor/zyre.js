@@ -7,6 +7,7 @@
  */
 
 const assert = require('chai').assert;
+const uuid = require('uuid');
 const ZyrePeer = require('../lib/zyre_peer');
 
 describe('ZyrePeer', () => {
@@ -22,25 +23,33 @@ describe('ZyrePeer', () => {
     // Set higher timeout to test evasive peers
     this.timeout(ZyrePeer.PEER_EVASIVE + 1000);
 
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
     const zyrePeer = new ZyrePeer({
       identity: '12345',
+      originID: identity,
     });
 
     zyrePeer.update({
       sequence: 1,
     });
 
-    zyrePeer.on('evasive', () => {
-      done();
-    });
+    setTimeout(() => {
+      if (zyrePeer._evasiveAt > 0) done();
+    }, ZyrePeer.PEER_EVASIVE + 100);
   });
 
   it('should mark an expired peer', function (done) {
     // Set higher timeout to test expired peers
     this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
 
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
     const zyrePeer = new ZyrePeer({
       identity: '12345',
+      originID: identity,
     });
 
     zyrePeer.update({
