@@ -23,14 +23,12 @@ describe('Zyre', () => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z1.on('expired', (id, name) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          setTimeout(() => { done(); }, 100);
-        });
-      });
+      hit = true;
     });
 
     z1.start().then(() => {
@@ -40,9 +38,19 @@ describe('Zyre', () => {
     setTimeout(() => {
       clearInterval(z1._zBeacon._broadcastTimer);
       clearInterval(z2._zBeacon._broadcastTimer);
+      assert.isDefined(z1.getPeer(z2.getIdentity()));
+      assert.isDefined(z2.getPeer(z1.getIdentity()));
       clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
       clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
     }, 100);
+
+    setTimeout(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    }, ZyrePeer.PEER_EXPIRED + 100);
   });
 
   it('should inform about peers that are back from being expired', function (done) {
@@ -52,14 +60,12 @@ describe('Zyre', () => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z1.on('back', (id, name) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          setTimeout(() => { done(); }, 100);
-        });
-      });
+      hit = true;
     });
 
     z1.start().then(() => {
@@ -69,6 +75,8 @@ describe('Zyre', () => {
     setTimeout(() => {
       clearInterval(z1._zBeacon._broadcastTimer);
       clearInterval(z2._zBeacon._broadcastTimer);
+      assert.isDefined(z1.getPeer(z2.getIdentity()));
+      assert.isDefined(z2.getPeer(z1.getIdentity()));
       clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
       clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
     }, 100);
@@ -76,18 +84,26 @@ describe('Zyre', () => {
     setTimeout(() => {
       z2._zBeacon.startBroadcasting();
     }, ZyrePeer.PEER_EXPIRED + 100);
+
+    setTimeout(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    }, ZyrePeer.PEER_EXPIRED + 200);
   });
 
   it('should inform about disconnected peers', (done) => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z1.on('disconnect', (id, name) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
-      z1.stop().then(() => {
-        setTimeout(() => { done(); }, 100);
-      });
+      hit = true;
     });
 
     z1.start().then(() => {
@@ -97,40 +113,50 @@ describe('Zyre', () => {
     setTimeout(() => {
       z2.stop();
     }, 100);
+
+    setTimeout(() => {
+      z1.stop().then(() => {
+        if (hit) setTimeout(() => { done(); }, 100);
+      });
+    }, 200);
   });
 
   it('should inform about connected peers', (done) => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z1.on('connect', (id, name) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          setTimeout(() => { done(); }, 100);
-        });
-      });
+      hit = true;
     });
 
     z1.start().then(() => {
       z2.start();
     });
+
+    setTimeout(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    }, 100);
   });
 
   it('should communicate with WHISPER messages', (done) => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z1.on('whisper', (id, name, message) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       assert.equal(message, 'Hey!');
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          setTimeout(() => { done(); }, 100);
-        });
-      });
+      hit = true;
     });
 
     z2.on('whisper', (id, name, message) => {
@@ -147,6 +173,14 @@ describe('Zyre', () => {
     setTimeout(() => {
       z1.whisper(z2.getIdentity(), 'Hello World!');
     }, 100);
+
+    setTimeout(() => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    }, 200);
   });
 
   it('should communicate with SHOUT messages', (done) => {
@@ -202,16 +236,14 @@ describe('Zyre', () => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z2.on('join', (id, name, group) => {
       assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(group, 'CHAT');
       assert.property(z2.getGroup('CHAT'), z1.getIdentity());
-      z1.stop().then(() => {
-        z2.stop().then(() => {
-          setTimeout(() => { done(); }, 100);
-        });
-      });
+      hit = true;
     });
 
     z1.start().then(() => {
@@ -221,22 +253,28 @@ describe('Zyre', () => {
     setTimeout(() => {
       z1.join('CHAT');
     }, 100);
+
+    setTimeout(() => {
+      z1.stop().then(() => {
+        z2.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    }, 200);
   });
 
   it('should leave a group and send LEAVE messages', (done) => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
+    let hit = false;
+
     z2.on('leave', (id, name, group) => {
       assert.equal(id, z1.getIdentity());
       assert.equal(name, 'z1');
       assert.equal(group, 'CHAT');
       assert.isNotObject(z2.getGroup(name));
-      z1.stop().then(() => {
-        z2.stop().then(() => {
-          setTimeout(() => { done(); }, 100);
-        });
-      });
+      hit = true;
     });
 
     z1.start().then(() => {
@@ -250,5 +288,13 @@ describe('Zyre', () => {
     setTimeout(() => {
       z1.leave('CHAT');
     }, 200);
+
+    setTimeout(() => {
+      z1.stop().then(() => {
+        z2.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    }, 300);
   });
 });
