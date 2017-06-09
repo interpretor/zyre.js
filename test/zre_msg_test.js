@@ -7,6 +7,7 @@
  */
 
 const assert = require('chai').assert;
+const zeromq = require('zeromq');
 const ZreMsg = require('../lib/zre_msg');
 
 describe('ZreMsg', () => {
@@ -37,6 +38,7 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
+    assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
     assert.equal(recvMsg.getSequence(), sequence);
     assert.equal(recvMsg.getEndpoint(), endpoint);
     assert.sameMembers(recvMsg.getGroups(), groups);
@@ -142,5 +144,160 @@ describe('ZreMsg', () => {
 
     assert.equal(recvMsg.getCmd(), ZreMsg.PING_OK);
     assert.equal(recvMsg.getSequence(), sequence);
+  });
+
+  it('should discard reading corrupted messages', () => {
+    const ZRE_VERSION = 2;
+    const ZRE_HEADER = [0xAA, 0xA1];
+
+    // Nothing is correct
+    let buf = Buffer.alloc(20);
+    buf.fill('a');
+    let recvMsg = ZreMsg.read(buf);
+    assert.isNotObject(recvMsg);
+
+    // Header is correct
+    buf = Buffer.alloc(25);
+    buf.fill('a');
+    buf = Buffer.concat([Buffer.from(ZRE_HEADER), buf]);
+    recvMsg = ZreMsg.read(buf);
+    assert.isNotObject(recvMsg);
+
+    // Header and version are correct, but the command isn't
+    buf = Buffer.alloc(1);
+    buf.writeUInt8(42);
+    let buf2 = Buffer.alloc(1);
+    buf2.writeUInt8(ZRE_VERSION);
+    buf = Buffer.concat([Buffer.from(ZRE_HEADER), buf, buf2]);
+    recvMsg = ZreMsg.read(buf);
+    assert.isNotObject(recvMsg);
+
+    // Everything header related correct, but garbish content
+    buf = Buffer.alloc(1);
+    buf.writeUInt8(1);
+    buf2 = Buffer.alloc(1);
+    buf2.writeUInt8(ZRE_VERSION);
+    const buf3 = Buffer.alloc(42);
+    buf3.fill('a');
+    buf = Buffer.concat([Buffer.from(ZRE_HEADER), buf, buf2, buf3]);
+    recvMsg = ZreMsg.read(buf);
+    assert.isNotObject(recvMsg);
+  });
+
+  it('should send a HELLO message with the given zeromq dealer socket', (done) => {
+    const sequence = 9;
+    const endpoint = 'tcp://127.0.0.1:42100';
+    const groups = ['FOO', 'BAR'];
+    const status = 3;
+    const name = 'foobar';
+    const headers = {
+      john: 'appleseed',
+      star: 'lord',
+    };
+
+    const zreMsg = new ZreMsg(ZreMsg.HELLO, {
+      sequence,
+      endpoint,
+      groups,
+      status,
+      name,
+      headers,
+    });
+
+    const router = zeromq.socket('router');
+    const dealer = zeromq.socket('dealer');
+
+    const address = 'tcp://127.0.0.1:42421';
+
+    let hit = false;
+
+    router.on('message', (id, msg) => {
+      const recvMsg = ZreMsg.read(msg);
+
+      assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
+      assert.equal(recvMsg.getSequence(), sequence);
+      assert.equal(recvMsg.getEndpoint(), endpoint);
+      assert.sameMembers(recvMsg.getGroups(), groups);
+      assert.equal(recvMsg.getStatus(), status);
+      assert.equal(recvMsg.getName(), name);
+      assert.deepEqual(recvMsg.getHeaders(), headers);
+
+      hit = true;
+    });
+
+    router.bindSync(address);
+    dealer.connect(address);
+
+    const stopAll = () => {
+      router.close();
+      dealer.close();
+      if (hit) setTimeout(() => { done(); }, 100);
+    };
+
+    zreMsg.send(dealer);
+
+    setTimeout(stopAll, 100);
+  });
+
+  it('should send a WHISPER message with the given zeromq dealer socket', (done) => {
+    const sequence = 10;
+    const content = 'Hello World!';
+
+    const zreMsg = new ZreMsg(ZreMsg.WHISPER, {
+      sequence,
+      content,
+    });
+
+    const router = zeromq.socket('router');
+    const dealer = zeromq.socket('dealer');
+
+    const address = 'tcp://127.0.0.1:42422';
+
+    let hit = false;
+
+    router.on('message', (id, msg, frame) => {
+      const recvMsg = ZreMsg.read(msg, frame);
+
+      assert.equal(recvMsg.getCmd(), ZreMsg.WHISPER);
+      assert.equal(recvMsg.getSequence(), sequence);
+      assert.equal(recvMsg.getContent(), content);
+
+      hit = true;
+    });
+
+    router.bindSync(address);
+    dealer.connect(address);
+
+    const stopAll = () => {
+      router.close();
+      dealer.close();
+      if (hit) setTimeout(() => { done(); }, 100);
+    };
+
+    zreMsg.send(dealer);
+
+    setTimeout(stopAll, 100);
+  });
+
+  it('should set the sequence and group', () => {
+    const sequence = 11;
+    const group = 'FOO';
+    const status = 1;
+
+    const zreMsg = new ZreMsg(ZreMsg.JOIN, {
+      sequence,
+      group,
+      status,
+    });
+
+    zreMsg.setGroup('BAR');
+    zreMsg.setSequence(42);
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.JOIN);
+    assert.equal(recvMsg.getSequence(), 42);
+    assert.equal(recvMsg.getGroup(), 'BAR');
+    assert.equal(recvMsg.getStatus(), status);
   });
 });
