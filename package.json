@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --timeout 10000 --slow 1000",
-    "precov": "nyc npm test",
-    "cov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+    "precoverage": "nyc npm test",
+    "coverage": "nyc report --reporter=text-lcov > coverage/codecov.lcov",
     "build:docs": "jsdoc -R README.md -d docs lib/*.js"
   },
   "repository": {
@@ -36,7 +36,7 @@
     "zeromq": "^4.2.3"
   },
   "devDependencies": {
-    "chai": "^4.0.1",
+    "chai": "^4.0.2",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",

@@ -15,7 +15,7 @@ env:
     - DEBUG="zyre*"
 
 script:
-  - 'if [[ $DEPLOY == true ]]; then travis_retry npm run cov; else travis_retry npm test; fi'
+  - 'if [[ $DEPLOY == true ]]; then travis_retry npm run coverage; else travis_retry npm test; fi'
 
 after_success:
   - 'if [[ $DEPLOY == true ]]; then npm run build:docs; bash <(curl -s https://codecov.io/bash); fi'
