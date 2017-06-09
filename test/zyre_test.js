@@ -321,4 +321,66 @@ describe('Zyre', () => {
       });
     });
   });
+
+  it('should return ZyrePeer(s) informations', (done) => {
+    const z1 = zyre.new({ name: 'z1' });
+    const z2 = zyre.new({ name: 'z2' });
+
+    let hit = false;
+
+    const getPeers = () => {
+      assert.isDefined(z1.getPeer(z2.getIdentity()));
+      assert.property(z1.getPeers(), z2.getIdentity());
+      assert.isDefined(z2.getPeer(z1.getIdentity()));
+      assert.property(z2.getPeers(), z1.getIdentity());
+      hit = true;
+    };
+
+    const stopAll = () => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 200);
+        });
+      });
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(getPeers, 200);
+        setTimeout(stopAll, 400);
+      });
+    });
+  });
+
+  it('should return ZyreGroup(s) informations', (done) => {
+    const z1 = zyre.new({ name: 'z1' });
+    const z2 = zyre.new({ name: 'z2' });
+
+    let hit = false;
+
+    const getGroups = () => {
+      assert.isDefined(z1.getGroup('TEST'));
+      assert.property(z1.getGroups(), 'TEST');
+      assert.isDefined(z2.getGroup('TEST'));
+      assert.property(z2.getGroups(), 'TEST');
+      hit = true;
+    };
+
+    const stopAll = () => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 200);
+        });
+      });
+    };
+
+    z1.start().then(() => {
+      z1.join('TEST');
+      z2.start().then(() => {
+        z2.join('TEST');
+        setTimeout(getGroups, 200);
+        setTimeout(stopAll, 400);
+      });
+    });
+  });
 });

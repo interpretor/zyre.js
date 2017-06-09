@@ -6,16 +6,16 @@ matrix:
       dist: trusty
       sudo: false
       node_js: "6"
-      env: DEPLOY="true"
+      env: DEPLOY=true
     - os: osx
       node_js: "6"
 
 env:
   global:
-    - DEBUG="zyre*"
+    - DEBUG=zyre*
 
 script:
-  - 'if [[ $DEPLOY == true ]]; then travis_retry npm run coverage; else travis_retry npm test; fi'
+  - travis_retry npm run coverage
 
 after_success:
   - 'if [[ $DEPLOY == true ]]; then npm run build:docs; bash <(curl -s https://codecov.io/bash); fi'
@@ -27,4 +27,4 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: master
-    condition: "$DEPLOY = true"
+    condition: $DEPLOY = true
