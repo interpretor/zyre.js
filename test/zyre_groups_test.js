@@ -7,45 +7,53 @@
  */
 
 const assert = require('chai').assert;
-const uuid = require('uuid');
+const EventEmitter = require('events');
 const ZyreGroups = require('../lib/zyre_groups');
 const ZyreGroup = require('../lib/zyre_group');
-const ZyrePeer = require('../lib/zyre_peer');
 
 describe('ZyreGroups', () => {
+  // ZyrePeer mock
+  class Peer extends EventEmitter {
+    constructor(identity) {
+      super();
+
+      this.identity = identity;
+      this.groups = {};
+    }
+
+    getIdentity() {
+      return this.identity;
+    }
+
+    addToGroup(group) {
+      if (typeof this.groups[group.getName()] === 'undefined') {
+        this.groups[group.getName()] = group;
+        group.add(this);
+      }
+    }
+
+    removeFromGroup(group) {
+      if (typeof this.groups[group.getName()] !== 'undefined') {
+        delete this.groups[group.getName()];
+        group.remove(this);
+      }
+    }
+
+    toObj() {
+      return {
+        groups: this.groups,
+      };
+    }
+  }
+
   it('should create an instance of ZyreGroups', () => {
     const zyreGroups = new ZyreGroups();
     assert.instanceOf(zyreGroups, ZyreGroups);
   });
 
-  it('should create a new ZyreGroup instance on push', () => {
+  it('should create a new ZyreGroup instance on push and remove an empty ZyreGroup', () => {
     const zyreGroups = new ZyreGroups();
-
-    const identity = Buffer.alloc(16);
-    uuid.v4(null, identity, 0);
-
-    const zyrePeer = new ZyrePeer({
-      identity: 'qwertz',
-      originID: identity,
-    });
-
-    const groupName = 'CHAT';
-
-    zyreGroups.push(groupName, zyrePeer);
-    assert.instanceOf(zyreGroups.getGroup(groupName), ZyreGroup);
-  });
-
-  it('should remove an empty group', () => {
-    const zyreGroups = new ZyreGroups();
-
-    const identity = Buffer.alloc(16);
-    uuid.v4(null, identity, 0);
-
-    const zyrePeer = new ZyrePeer({
-      identity: 'qwertz',
-      originID: identity,
-    });
-
+    const zyrePeer = new Peer();
     const groupName = 'CHAT';
 
     zyreGroups.push(groupName, zyrePeer);
@@ -55,21 +63,28 @@ describe('ZyreGroups', () => {
     assert.isFalse(zyreGroups.exists(groupName));
   });
 
+  it('should add multiple peers to the already created ZyreGroup, and not delete the group on remove', () => {
+    const zyreGroups = new ZyreGroups();
+    const zyrePeer1 = new Peer('foo');
+    const zyrePeer2 = new Peer('bar');
+    const groupName = 'CHAT';
+
+    zyreGroups.push(groupName, zyrePeer1);
+    zyreGroups.push(groupName, zyrePeer2);
+
+    assert.equal(zyreGroups.getGroup(groupName).amountOfPeers(), 2);
+
+    zyreGroups.remove(groupName, zyrePeer2);
+
+    assert.exists(groupName);
+  });
+
   it('should return the public groups object', () => {
     const zyreGroups = new ZyreGroups();
-
-    const identity = Buffer.alloc(16);
-    uuid.v4(null, identity, 0);
-
-    const zyrePeer = new ZyrePeer({
-      identity: 'qwertz',
-      originID: identity,
-    });
-
+    const zyrePeer = new Peer('foobar');
     const groupName = 'CHAT';
 
     zyreGroups.push(groupName, zyrePeer);
-    assert.instanceOf(zyreGroups.getGroup(groupName), ZyreGroup);
-    assert.property(zyreGroups.toObj().CHAT, 'qwertz');
+    assert.property(zyreGroups.toObj().CHAT, 'foobar');
   });
 });

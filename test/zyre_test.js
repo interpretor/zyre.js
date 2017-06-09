@@ -333,6 +333,7 @@ describe('Zyre', () => {
       assert.property(z1.getPeers(), z2.getIdentity());
       assert.isDefined(z2.getPeer(z1.getIdentity()));
       assert.property(z2.getPeers(), z1.getIdentity());
+      assert.isNotObject(z1.getPeer('foobar42123'));
       hit = true;
     };
 
@@ -382,5 +383,17 @@ describe('Zyre', () => {
         setTimeout(stopAll, 400);
       });
     });
+  });
+
+  it('should throw an error if interface data could not be found', () => {
+    let hit = false;
+
+    try {
+      zyre.new({ name: 'z1', iface: 'foobar123' });
+    } catch (err) {
+      if (err.message === 'Could not find IPv4 broadcast interface data') hit = true;
+    }
+
+    assert.isTrue(hit);
   });
 });
