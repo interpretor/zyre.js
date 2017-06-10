@@ -8,7 +8,6 @@
 
 const assert = require('chai').assert;
 const zyre = require('../lib/zyre');
-const ZyrePeer = require('../lib/zyre_peer');
 
 describe('Zyre', () => {
   it('should create a new instance of Zyre', () => {
@@ -313,11 +312,14 @@ describe('Zyre', () => {
   });
 
   it('should inform about expired peers', function (done) {
-    // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
+    const evasive = 1000;
+    const expired = 2000;
 
-    const z1 = zyre.new({ name: 'z1' });
-    const z2 = zyre.new({ name: 'z2' });
+    // Set higher timeout to test expired peers
+    this.timeout(5000 + expired);
+
+    const z1 = zyre.new({ name: 'z1', evasive, expired });
+    const z2 = zyre.new({ name: 'z2', evasive, expired });
 
     let hit = false;
 
@@ -347,17 +349,20 @@ describe('Zyre', () => {
     z1.start().then(() => {
       z2.start().then(() => {
         setTimeout(stopTimeouts, 100);
-        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 100);
+        setTimeout(stopAll, expired + 100);
       });
     });
   });
 
   it('should inform about peers that are back from being expired', function (done) {
-    // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
+    const evasive = 1000;
+    const expired = 2000;
 
-    const z1 = zyre.new({ name: 'z1' });
-    const z2 = zyre.new({ name: 'z2' });
+    // Set higher timeout to test expired peers
+    this.timeout(5000 + expired);
+
+    const z1 = zyre.new({ name: 'z1', evasive, expired });
+    const z2 = zyre.new({ name: 'z2', evasive, expired });
 
     let hit = false;
 
@@ -391,8 +396,8 @@ describe('Zyre', () => {
     z1.start().then(() => {
       z2.start().then(() => {
         setTimeout(stopTimeouts, 100);
-        setTimeout(startBroadcast, ZyrePeer.PEER_EXPIRED + 100);
-        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 200);
+        setTimeout(startBroadcast, expired + 100);
+        setTimeout(stopAll, expired + 200);
       });
     });
   });

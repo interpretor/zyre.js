@@ -19,9 +19,9 @@ describe('ZyrePeer', () => {
     assert.instanceOf(zyrePeer, ZyrePeer);
   });
 
-  it('should mark an evasive peer', function (done) {
-    // Set higher timeout to test evasive peers
-    this.timeout(ZyrePeer.PEER_EVASIVE + 1000);
+  it('should mark an evasive peer', (done) => {
+    const evasive = 200;
+    const expired = 400;
 
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
@@ -29,6 +29,8 @@ describe('ZyrePeer', () => {
     const zyrePeer = new ZyrePeer({
       identity: '12345',
       originID: identity,
+      evasive,
+      expired,
     });
 
     zyrePeer.update({
@@ -38,12 +40,12 @@ describe('ZyrePeer', () => {
     setTimeout(() => {
       zyrePeer._clearTimeouts();
       if (zyrePeer._evasiveAt > 0) done();
-    }, ZyrePeer.PEER_EVASIVE + 100);
+    }, evasive + 100);
   });
 
-  it('should mark an expired peer', function (done) {
-    // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 1000);
+  it('should mark an expired peer', (done) => {
+    const evasive = 200;
+    const expired = 400;
 
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
@@ -51,6 +53,8 @@ describe('ZyrePeer', () => {
     const zyrePeer = new ZyrePeer({
       identity: '12345',
       originID: identity,
+      evasive,
+      expired,
     });
 
     zyrePeer.update({

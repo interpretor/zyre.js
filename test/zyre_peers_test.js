@@ -15,7 +15,7 @@ describe('ZyrePeers', () => {
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
 
-    const zyrePeers = new ZyrePeers(identity);
+    const zyrePeers = new ZyrePeers({ identity });
 
     assert.instanceOf(zyrePeers, ZyrePeers);
   });
