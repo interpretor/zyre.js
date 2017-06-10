@@ -18,7 +18,7 @@ script:
   - travis_retry npm run coverage
 
 after_success:
-  - 'if [[ $DEPLOY == true ]]; then npm run build:docs; bash <(curl -s https://codecov.io/bash); fi'
+  - if [[ $DEPLOY == true ]]; then npm run build:docs; bash <(curl -s https://codecov.io/bash); fi
 
 deploy:
   provider: pages
