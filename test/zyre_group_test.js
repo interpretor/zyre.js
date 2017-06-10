@@ -67,12 +67,10 @@ describe('ZyreGroup', () => {
     const zyreGroup = new ZyreGroup('TEST');
 
     zyreGroup.add(zyrePeer);
-
     assert.equal(zyreGroup.amountOfPeers(), 1);
     assert.property(zyrePeer.groups, 'TEST');
 
     zyreGroup.remove(zyrePeer);
-
     assert.equal(zyreGroup.amountOfPeers(), 0);
     assert.deepEqual(zyrePeer.groups, {});
   });
@@ -82,7 +80,6 @@ describe('ZyreGroup', () => {
     const zyreGroup = new ZyreGroup('TEST');
 
     zyreGroup.add(zyrePeer);
-
     assert.property(zyreGroup.toObj(), 'foobar');
   });
 

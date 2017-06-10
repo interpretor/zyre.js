@@ -7,16 +7,13 @@
  */
 
 const assert = require('chai').assert;
-const EventEmitter = require('events');
 const ZyreGroups = require('../lib/zyre_groups');
 const ZyreGroup = require('../lib/zyre_group');
 
 describe('ZyreGroups', () => {
   // ZyrePeer mock
-  class Peer extends EventEmitter {
+  class Peer {
     constructor(identity) {
-      super();
-
       this.identity = identity;
       this.groups = {};
     }
@@ -53,7 +50,7 @@ describe('ZyreGroups', () => {
 
   it('should create a new ZyreGroup instance on push and remove an empty ZyreGroup', () => {
     const zyreGroups = new ZyreGroups();
-    const zyrePeer = new Peer();
+    const zyrePeer = new Peer('foobar');
     const groupName = 'CHAT';
 
     zyreGroups.push(groupName, zyrePeer);
@@ -63,7 +60,7 @@ describe('ZyreGroups', () => {
     assert.isFalse(zyreGroups.exists(groupName));
   });
 
-  it('should add multiple peers to the already created ZyreGroup, and not delete the group on remove', () => {
+  it('should add multiple peers to the already created ZyreGroup', () => {
     const zyreGroups = new ZyreGroups();
     const zyrePeer1 = new Peer('foo');
     const zyrePeer2 = new Peer('bar');
@@ -71,11 +68,11 @@ describe('ZyreGroups', () => {
 
     zyreGroups.push(groupName, zyrePeer1);
     zyreGroups.push(groupName, zyrePeer2);
-
     assert.equal(zyreGroups.getGroup(groupName).amountOfPeers(), 2);
+    assert.property(zyrePeer1.groups, groupName);
+    assert.property(zyrePeer2.groups, groupName);
 
     zyreGroups.remove(groupName, zyrePeer2);
-
     assert.exists(groupName);
   });
 

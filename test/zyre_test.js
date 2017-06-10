@@ -16,87 +16,41 @@ describe('Zyre', () => {
     assert.instanceOf(z1, zyre);
   });
 
-  it('should inform about expired peers', function (done) {
-    // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
-
-    const z1 = zyre.new({ name: 'z1' });
-    const z2 = zyre.new({ name: 'z2' });
-
+  it('should throw an error if interface data could not be found', () => {
     let hit = false;
 
-    z1.on('expired', (id, name) => {
-      assert.equal(id, z2.getIdentity());
-      assert.equal(name, 'z2');
-      hit = true;
-    });
+    try {
+      zyre.new({ name: 'z1', iface: 'foobar123' });
+    } catch (err) {
+      if (err.message === 'Could not find IPv4 broadcast interface data') hit = true;
+    }
 
-    const stopTimeouts = () => {
-      clearInterval(z1._zBeacon._broadcastTimer);
-      clearInterval(z2._zBeacon._broadcastTimer);
-      assert.isDefined(z1.getPeer(z2.getIdentity()));
-      assert.isDefined(z2.getPeer(z1.getIdentity()));
-      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
-      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
-    };
-
-    const stopAll = () => {
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
-        });
-      });
-    };
-
-    z1.start().then(() => {
-      z2.start().then(() => {
-        setTimeout(stopTimeouts, 200);
-        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 200);
-      });
-    });
+    assert.isTrue(hit);
   });
 
-  it('should inform about peers that are back from being expired', function (done) {
-    // Set higher timeout to test expired peers
-    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
-
+  it('should inform about connected peers', (done) => {
     const z1 = zyre.new({ name: 'z1' });
     const z2 = zyre.new({ name: 'z2' });
 
     let hit = false;
 
-    z1.on('back', (id, name) => {
+    z1.on('connect', (id, name) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
       hit = true;
     });
 
-    const stopTimeouts = () => {
-      clearInterval(z1._zBeacon._broadcastTimer);
-      clearInterval(z2._zBeacon._broadcastTimer);
-      assert.isDefined(z1.getPeer(z2.getIdentity()));
-      assert.isDefined(z2.getPeer(z1.getIdentity()));
-      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
-      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
-    };
-
-    const startBroadcast = () => {
-      z2._zBeacon.startBroadcasting();
-    };
-
     const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 100);
         });
       });
     };
 
     z1.start().then(() => {
       z2.start().then(() => {
-        setTimeout(stopTimeouts, 200);
-        setTimeout(startBroadcast, ZyrePeer.PEER_EXPIRED + 200);
-        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 400);
+        setTimeout(stopAll, 100);
       });
     });
   });
@@ -119,40 +73,13 @@ describe('Zyre', () => {
 
     const stopAll = () => {
       z1.stop().then(() => {
-        if (hit) setTimeout(() => { done(); }, 200);
+        if (hit) setTimeout(() => { done(); }, 100);
       });
     };
 
     z1.start().then(() => {
       z2.start().then(() => {
-        setTimeout(stopZ2, 200);
-        setTimeout(stopAll, 400);
-      });
-    });
-  });
-
-  it('should inform about connected peers', (done) => {
-    const z1 = zyre.new({ name: 'z1' });
-    const z2 = zyre.new({ name: 'z2' });
-
-    let hit = false;
-
-    z1.on('connect', (id, name) => {
-      assert.equal(id, z2.getIdentity());
-      assert.equal(name, 'z2');
-      hit = true;
-    });
-
-    const stopAll = () => {
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
-        });
-      });
-    };
-
-    z1.start().then(() => {
-      z2.start().then(() => {
+        setTimeout(stopZ2, 100);
         setTimeout(stopAll, 200);
       });
     });
@@ -185,15 +112,15 @@ describe('Zyre', () => {
     const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 100);
         });
       });
     };
 
     z1.start().then(() => {
       z2.start().then(() => {
-        setTimeout(whisper, 200);
-        setTimeout(stopAll, 400);
+        setTimeout(whisper, 100);
+        setTimeout(stopAll, 200);
       });
     });
   });
@@ -230,7 +157,7 @@ describe('Zyre', () => {
       z3.stop().then(() => {
         z2.stop().then(() => {
           z1.stop().then(() => {
-            if (hit1 && hit2) setTimeout(() => { done(); }, 200);
+            if (hit1 && hit2) setTimeout(() => { done(); }, 100);
           });
         });
       });
@@ -242,8 +169,8 @@ describe('Zyre', () => {
         z2.join('CHAT');
         z3.start().then(() => {
           z3.join('CHAT');
-          setTimeout(shout, 200);
-          setTimeout(stopAll, 400);
+          setTimeout(shout, 100);
+          setTimeout(stopAll, 200);
         });
       });
     });
@@ -270,15 +197,15 @@ describe('Zyre', () => {
     const stopAll = () => {
       z1.stop().then(() => {
         z2.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 100);
         });
       });
     };
 
     z1.start().then(() => {
       z2.start().then(() => {
-        setTimeout(join, 200);
-        setTimeout(stopAll, 400);
+        setTimeout(join, 100);
+        setTimeout(stopAll, 200);
       });
     });
   });
@@ -308,16 +235,16 @@ describe('Zyre', () => {
     const stopAll = () => {
       z1.stop().then(() => {
         z2.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 100);
         });
       });
     };
 
     z1.start().then(() => {
       z2.start().then(() => {
-        setTimeout(join, 200);
-        setTimeout(leave, 400);
-        setTimeout(stopAll, 600);
+        setTimeout(join, 100);
+        setTimeout(leave, 200);
+        setTimeout(stopAll, 300);
       });
     });
   });
@@ -340,15 +267,15 @@ describe('Zyre', () => {
     const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 100);
         });
       });
     };
 
     z1.start().then(() => {
       z2.start().then(() => {
-        setTimeout(getPeers, 200);
-        setTimeout(stopAll, 400);
+        setTimeout(getPeers, 100);
+        setTimeout(stopAll, 200);
       });
     });
   });
@@ -370,7 +297,7 @@ describe('Zyre', () => {
     const stopAll = () => {
       z2.stop().then(() => {
         z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 200);
+          if (hit) setTimeout(() => { done(); }, 100);
         });
       });
     };
@@ -379,21 +306,94 @@ describe('Zyre', () => {
       z1.join('TEST');
       z2.start().then(() => {
         z2.join('TEST');
-        setTimeout(getGroups, 200);
-        setTimeout(stopAll, 400);
+        setTimeout(getGroups, 100);
+        setTimeout(stopAll, 200);
       });
     });
   });
 
-  it('should throw an error if interface data could not be found', () => {
+  it('should inform about expired peers', function (done) {
+    // Set higher timeout to test expired peers
+    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
+
+    const z1 = zyre.new({ name: 'z1' });
+    const z2 = zyre.new({ name: 'z2' });
+
     let hit = false;
 
-    try {
-      zyre.new({ name: 'z1', iface: 'foobar123' });
-    } catch (err) {
-      if (err.message === 'Could not find IPv4 broadcast interface data') hit = true;
-    }
+    z1.on('expired', (id, name) => {
+      assert.equal(id, z2.getIdentity());
+      assert.equal(name, 'z2');
+      hit = true;
+    });
 
-    assert.isTrue(hit);
+    const stopTimeouts = () => {
+      clearInterval(z1._zBeacon._broadcastTimer);
+      clearInterval(z2._zBeacon._broadcastTimer);
+      assert.isDefined(z1.getPeer(z2.getIdentity()));
+      assert.isDefined(z2.getPeer(z1.getIdentity()));
+      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
+      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
+    };
+
+    const stopAll = () => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(stopTimeouts, 100);
+        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 100);
+      });
+    });
+  });
+
+  it('should inform about peers that are back from being expired', function (done) {
+    // Set higher timeout to test expired peers
+    this.timeout(ZyrePeer.PEER_EXPIRED + 10000);
+
+    const z1 = zyre.new({ name: 'z1' });
+    const z2 = zyre.new({ name: 'z2' });
+
+    let hit = false;
+
+    z1.on('back', (id, name) => {
+      assert.equal(id, z2.getIdentity());
+      assert.equal(name, 'z2');
+      hit = true;
+    });
+
+    const stopTimeouts = () => {
+      clearInterval(z1._zBeacon._broadcastTimer);
+      clearInterval(z2._zBeacon._broadcastTimer);
+      assert.isDefined(z1.getPeer(z2.getIdentity()));
+      assert.isDefined(z2.getPeer(z1.getIdentity()));
+      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
+      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
+    };
+
+    const startBroadcast = () => {
+      z2._zBeacon.startBroadcasting();
+    };
+
+    const stopAll = () => {
+      z2.stop().then(() => {
+        z1.stop().then(() => {
+          if (hit) setTimeout(() => { done(); }, 100);
+        });
+      });
+    };
+
+    z1.start().then(() => {
+      z2.start().then(() => {
+        setTimeout(stopTimeouts, 100);
+        setTimeout(startBroadcast, ZyrePeer.PEER_EXPIRED + 100);
+        setTimeout(stopAll, ZyrePeer.PEER_EXPIRED + 200);
+      });
+    });
   });
 });
