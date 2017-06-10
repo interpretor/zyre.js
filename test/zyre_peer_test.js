@@ -52,7 +52,7 @@ describe('ZyrePeer', () => {
       this.socket = socket;
       assert.instanceOf(this.socket, zeromq.Socket);
       return new Promise((resolve) => {
-        resolve();
+        resolve(1);
       });
     }
   }

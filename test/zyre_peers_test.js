@@ -26,7 +26,7 @@ describe('ZyrePeers', () => {
       this.socket = socket;
       assert.instanceOf(this.socket, zeromq.Socket);
       return new Promise((resolve) => {
-        resolve();
+        resolve(1);
       });
     }
   }
@@ -138,7 +138,7 @@ describe('ZyrePeers', () => {
 
     setTimeout(() => {
       zyrePeers.push({ identity: '12345' });
-      zyrePeers.push({ address: '127.0.0.1', mailbox: 0 });
+      zyrePeers.push({ identity: '12345', address: '127.0.0.1', mailbox: 0 });
       zyrePeers.closeAll();
       if (hit1 && hit2 && hit3) done();
     }, expired + 50);
