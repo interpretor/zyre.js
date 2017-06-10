@@ -17,14 +17,14 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new HELLO message and validate the output buffer', () => {
-    const sequence = 2;
+    const sequence = 1;
     const endpoint = 'tcp://127.0.0.1:50100';
     const groups = ['CHAT', 'TEST'];
     const status = 2;
     const name = 'node';
     const headers = {
-      head1: 'head',
-      test: 'two',
+      foo: 'bar',
+      bob: 'omb',
     };
 
     const zreMsg = new ZreMsg(ZreMsg.HELLO, {
@@ -48,7 +48,7 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new WHISPER message and validate the output buffer', () => {
-    const sequence = 3;
+    const sequence = 2;
     const content = 'Hello World!';
 
     const zreMsg = new ZreMsg(ZreMsg.WHISPER, {
@@ -64,7 +64,7 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new SHOUT message and validate the output buffer', () => {
-    const sequence = 4;
+    const sequence = 3;
     const group = 'CHAT';
     const content = 'Hello World!';
 
@@ -83,8 +83,8 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new JOIN message and validate the output buffer', () => {
-    const sequence = 5;
-    const group = 'TEST';
+    const sequence = 4;
+    const group = 'CHAT';
     const status = 1;
 
     const zreMsg = new ZreMsg(ZreMsg.JOIN, {
@@ -102,8 +102,8 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new LEAVE message and validate the output buffer', () => {
-    const sequence = 6;
-    const group = 'PEERS';
+    const sequence = 5;
+    const group = 'CHAT';
     const status = 1;
 
     const zreMsg = new ZreMsg(ZreMsg.LEAVE, {
@@ -121,7 +121,7 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new PING message and validate the output buffer', () => {
-    const sequence = 7;
+    const sequence = 6;
 
     const zreMsg = new ZreMsg(ZreMsg.PING, {
       sequence,
@@ -134,7 +134,7 @@ describe('ZreMsg', () => {
   });
 
   it('should create a new PING_OK message and validate the output buffer', () => {
-    const sequence = 8;
+    const sequence = 7;
 
     const zreMsg = new ZreMsg(ZreMsg.PING_OK, {
       sequence,
@@ -157,7 +157,7 @@ describe('ZreMsg', () => {
     assert.isNotObject(recvMsg);
 
     // Header is correct
-    buf = Buffer.alloc(25);
+    buf = Buffer.alloc(18);
     buf.fill('a');
     buf = Buffer.concat([Buffer.from(ZRE_HEADER), buf]);
     recvMsg = ZreMsg.read(buf);
@@ -185,10 +185,10 @@ describe('ZreMsg', () => {
   });
 
   it('should send a HELLO message with the given zeromq dealer socket', (done) => {
-    const sequence = 9;
-    const endpoint = 'tcp://127.0.0.1:42100';
+    const sequence = 1;
+    const endpoint = 'tcp://127.0.0.1:42101';
     const groups = ['FOO', 'BAR'];
-    const status = 3;
+    const status = 2;
     const name = 'foobar';
     const headers = {
       john: 'appleseed',
@@ -240,7 +240,7 @@ describe('ZreMsg', () => {
   });
 
   it('should send a WHISPER message with the given zeromq dealer socket', (done) => {
-    const sequence = 10;
+    const sequence = 42;
     const content = 'Hello World!';
 
     const zreMsg = new ZreMsg(ZreMsg.WHISPER, {
@@ -280,7 +280,7 @@ describe('ZreMsg', () => {
   });
 
   it('should set the sequence and group', () => {
-    const sequence = 11;
+    const sequence = 24;
     const group = 'FOO';
     const status = 1;
 
