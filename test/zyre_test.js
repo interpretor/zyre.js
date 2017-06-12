@@ -29,13 +29,14 @@ describe('Zyre', () => {
 
   it('should inform about connected peers', (done) => {
     const z1 = zyre.new({ name: 'z1' });
-    const z2 = zyre.new({ name: 'z2' });
+    const z2 = zyre.new({ name: 'z2', headers: { foo: 'bar' } });
 
     let hit = false;
 
-    z1.on('connect', (id, name) => {
+    z1.on('connect', (id, name, headers) => {
       assert.equal(id, z2.getIdentity());
       assert.equal(name, 'z2');
+      assert.deepEqual(headers, { foo: 'bar' });
       hit = true;
     });
 

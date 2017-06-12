@@ -166,7 +166,7 @@ describe('ZyrePeer', () => {
     let hit = false;
     let hit2 = false;
 
-    zyrePeer.on('disconnect', () => {
+    zyrePeer.on('close', () => {
       hit = true;
     });
 
@@ -196,7 +196,7 @@ describe('ZyrePeer', () => {
     assert.equal(zyrePeer.getName(), 'foobar');
 
     zyrePeer.update({ headers: { foo: 'bar' } });
-    assert.deepEqual(zyrePeer._headers, { foo: 'bar' });
+    assert.deepEqual(zyrePeer.getHeaders(), { foo: 'bar' });
 
     setTimeout(() => {
       zyrePeer.update({ sequence: 2 });
