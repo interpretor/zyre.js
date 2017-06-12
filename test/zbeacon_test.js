@@ -149,4 +149,20 @@ describe('ZBeacon', () => {
       });
     });
   });
+
+  it('should not throw any error if any socket is not initialized on stop', (done) => {
+    const identity = Buffer.alloc(16);
+    uuid.v4(null, identity, 0);
+
+    const zBeacon = new ZBeacon({
+      identity,
+      mailbox: 51409,
+      broadcast: ZHelper.getIfData().broadcast,
+      zyrePeers: new Peers(),
+    });
+
+    zBeacon.stop().then(() => {
+      done();
+    });
+  });
 });

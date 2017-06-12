@@ -7,6 +7,7 @@
  */
 
 const assert = require('chai').assert;
+const net = require('net');
 const ZHelper = require('../lib/zhelper');
 
 describe('ZHelper', () => {
@@ -27,6 +28,19 @@ describe('ZHelper', () => {
     ZHelper.getFreePort(ifdata.address, p).then((port) => {
       assert.isAtLeast(port, p);
       done();
+    });
+  });
+
+  it('should return a free TCP port also when the initial port is blocked', (done) => {
+    const ifdata = ZHelper.getIfData();
+    const p = 49152;
+
+    const server = net.createServer();
+    server.listen(p, ifdata.address, () => {
+      ZHelper.getFreePort(ifdata.address, p).then((port) => {
+        assert.isAtLeast(port, p + 1);
+        done();
+      });
     });
   });
 });

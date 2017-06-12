@@ -47,6 +47,31 @@ describe('ZreMsg', () => {
     assert.deepEqual(recvMsg.getHeaders(), headers);
   });
 
+  it('should not create a new HELLO message if sequence is not 1', () => {
+    const sequence = 2;
+    const endpoint = 'tcp://127.0.0.1:50100';
+    const groups = ['CHAT', 'TEST'];
+    const status = 2;
+    const name = 'node';
+    const headers = {
+      foo: 'bar',
+      bob: 'omb',
+    };
+
+    const zreMsg = new ZreMsg(ZreMsg.HELLO, {
+      sequence,
+      endpoint,
+      groups,
+      status,
+      name,
+      headers,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.isNotObject(recvMsg);
+  });
+
   it('should create a new WHISPER message and validate the output buffer', () => {
     const sequence = 2;
     const content = 'Hello World!';
