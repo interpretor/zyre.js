@@ -313,8 +313,8 @@ describe('Zyre', () => {
   });
 
   it('should inform about expired peers', function (done) {
-    const evasive = 1000;
-    const expired = 2000;
+    const evasive = 200;
+    const expired = 400;
 
     // Set higher timeout to test expired peers
     this.timeout(5000 + expired);
@@ -351,54 +351,6 @@ describe('Zyre', () => {
       z2.start().then(() => {
         setTimeout(stopTimeouts, 100);
         setTimeout(stopAll, expired + 100);
-      });
-    });
-  });
-
-  it('should inform about peers that are back from being expired', function (done) {
-    const evasive = 1000;
-    const expired = 2000;
-
-    // Set higher timeout to test expired peers
-    this.timeout(5000 + expired);
-
-    const z1 = zyre.new({ name: 'z1', evasive, expired });
-    const z2 = zyre.new({ name: 'z2', evasive, expired });
-
-    let hit = false;
-
-    z1.on('back', (id, name) => {
-      assert.equal(id, z2.getIdentity());
-      assert.equal(name, 'z2');
-      hit = true;
-    });
-
-    const stopTimeouts = () => {
-      clearInterval(z1._zBeacon._broadcastTimer);
-      clearInterval(z2._zBeacon._broadcastTimer);
-      assert.isDefined(z1.getPeer(z2.getIdentity()));
-      assert.isDefined(z2.getPeer(z1.getIdentity()));
-      clearTimeout(z1._zyrePeers._peers[z2.getIdentity()]._evasiveTimeout);
-      clearTimeout(z2._zyrePeers._peers[z1.getIdentity()]._evasiveTimeout);
-    };
-
-    const startBroadcast = () => {
-      z2._zBeacon.startBroadcasting();
-    };
-
-    const stopAll = () => {
-      z2.stop().then(() => {
-        z1.stop().then(() => {
-          if (hit) setTimeout(() => { done(); }, 100);
-        });
-      });
-    };
-
-    z1.start().then(() => {
-      z2.start().then(() => {
-        setTimeout(stopTimeouts, 100);
-        setTimeout(startBroadcast, expired + 100);
-        setTimeout(stopAll, expired + 200);
       });
     });
   });

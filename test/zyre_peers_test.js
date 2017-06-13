@@ -40,7 +40,7 @@ describe('ZyrePeers', () => {
     assert.instanceOf(zyrePeers, ZyrePeers);
   });
 
-  it('should create a new ZyrePeer on push and close it afterwards', () => {
+  it('should create a new ZyrePeer on push and disconnect it afterwards', () => {
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
 
@@ -66,12 +66,12 @@ describe('ZyrePeers', () => {
     assert.isNotTrue(zyrePeers.exists('56789'));
     assert.equal(zyrePeers.getPeer('12345'), zyrePeer);
 
-    zyrePeers.getPeer('12345').close();
+    zyrePeers.getPeer('12345').disconnect();
     assert.isNotTrue(zyrePeers.exists('12345'));
 
     zyrePeers.push({ identity: '123' });
     zyrePeers.push({ identity: '456' });
-    zyrePeers.closeAll();
+    zyrePeers.disconnectAll();
     assert.isNotTrue(zyrePeers.exists('123'));
     assert.isNotTrue(zyrePeers.exists('456'));
   });
@@ -91,7 +91,7 @@ describe('ZyrePeers', () => {
     zyrePeers.send(zreMsg);
     assert.equal(msgHit, 2);
 
-    zyrePeers.closeAll();
+    zyrePeers.disconnectAll();
   });
 
   it('should return the public peers object', () => {
@@ -106,7 +106,7 @@ describe('ZyrePeers', () => {
     assert.property(zyrePeers.toObj(), '123');
     assert.property(zyrePeers.toObj(), '456');
 
-    zyrePeers.closeAll();
+    zyrePeers.disconnectAll();
   });
 
   it('should add events to the created peers', (done) => {
@@ -120,18 +120,13 @@ describe('ZyrePeers', () => {
 
     let hit1 = false;
     let hit2 = false;
-    let hit3 = false;
 
     zyrePeers.on('expired', () => {
       hit1 = true;
     });
 
-    zyrePeers.on('back', () => {
-      hit2 = true;
-    });
-
     zyrePeers.on('disconnect', () => {
-      hit3 = true;
+      hit2 = true;
     });
 
     zyrePeers.push({ identity: '12345', endpoint: 'tcp://127.0.0.1:56789' });
@@ -140,8 +135,8 @@ describe('ZyrePeers', () => {
       zyrePeers.push({ identity: '12345' });
       zyrePeers.push({ identity: '12345', address: '127.0.0.1', mailbox: 0 });
       assert.isNotTrue(zyrePeers.exists('12345'));
-      zyrePeers.closeAll();
-      if (hit1 && hit2 && hit3) done();
+      zyrePeers.disconnectAll();
+      if (hit1 && hit2) done();
     }, expired + 50);
   });
 });

@@ -107,7 +107,7 @@ describe('ZyrePeer', () => {
     assert.deepEqual(zyrePeer._groups, {});
   });
 
-  it('should create a new zeromq dealer socket on connect, pause on disconnect and finally close', () => {
+  it('should create a new zeromq dealer socket on connect and close it on disconnect', () => {
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
 
@@ -119,15 +119,19 @@ describe('ZyrePeer', () => {
     const zyreGroup = new Group('CHAT');
     zyrePeer._endpoint = 'tcp://127.0.0.1:42321';
 
+    let hit = false;
+
+    zyrePeer.on('disconnect', () => {
+      hit = true;
+    });
+
     zyrePeer.addToGroup(zyreGroup);
     zyrePeer.connect();
     assert.instanceOf(zyrePeer._socket, zeromq.Socket);
     zyrePeer.disconnect();
-    assert.isTrue(zyrePeer._socket._paused);
-    zyrePeer.connect();
-    assert.isNotTrue(zyrePeer._socket._paused);
-    zyrePeer.close();
+    assert.isNotObject(zyrePeer._socket);
     assert.deepEqual(zyrePeer._groups, {});
+    assert.isTrue(hit);
   });
 
   it('should send a message to the peer', () => {
@@ -146,32 +150,22 @@ describe('ZyrePeer', () => {
     zyrePeer.send(zreMsg);
     assert.equal(msgHit, 1);
 
-    zyrePeer.close();
+    zyrePeer.disconnect();
   });
 
-  it('should update the peers information', (done) => {
-    const evasive = 100;
-    const expired = 200;
-
+  it('should update the peers information', () => {
     const identity = Buffer.alloc(16);
     uuid.v4(null, identity, 0);
 
     const zyrePeer = new ZyrePeer({
       identity: '12345',
       originID: identity,
-      evasive,
-      expired,
     });
 
     let hit = false;
-    let hit2 = false;
 
-    zyrePeer.on('close', () => {
+    zyrePeer.on('disconnect', () => {
       hit = true;
-    });
-
-    zyrePeer.on('back', () => {
-      hit2 = true;
     });
 
     zyrePeer.update({ sequence: 1 });
@@ -198,11 +192,7 @@ describe('ZyrePeer', () => {
     zyrePeer.update({ headers: { foo: 'bar' } });
     assert.deepEqual(zyrePeer.getHeaders(), { foo: 'bar' });
 
-    setTimeout(() => {
-      zyrePeer.update({ sequence: 2 });
-      zyrePeer._clearTimeouts();
-      if (hit2) done();
-    }, expired + 50);
+    zyrePeer._clearTimeouts();
   });
 
   it('should mark an evasive peer', (done) => {
