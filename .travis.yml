@@ -6,7 +6,6 @@ matrix:
       dist: trusty
       sudo: false
       node_js: "6"
-      env: DEPLOY=true
     - os: osx
       node_js: "6"
 
@@ -18,7 +17,8 @@ script:
   - travis_retry npm run coverage
 
 after_success:
-  - if [[ $DEPLOY == true ]]; then npm run build:docs; bash <(curl -s https://codecov.io/bash); fi
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
+  - if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == false ]]; then npm run build:docs; fi
 
 deploy:
   provider: pages
@@ -27,4 +27,4 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: master
-    condition: $DEPLOY = true
+    condition: $TRAVIS_OS_NAME = "linux"
