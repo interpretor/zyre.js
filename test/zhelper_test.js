@@ -50,7 +50,9 @@ describe('ZHelper', () => {
     server.listen(p, ifdata.address, () => {
       ZHelper.getFreePort(ifdata.address, p).then((port) => {
         assert.isAtLeast(port, p + 1);
-        done();
+        server.close(() => {
+          done();
+        });
       });
     });
   });

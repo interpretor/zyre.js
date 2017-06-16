@@ -31,7 +31,6 @@
   "homepage": "https://github.com/interpretor/zyre.js#readme",
   "dependencies": {
     "debug": "2.6.8",
-    "tcp-port-used": "0.1.2",
     "uuid": "3.0.1",
     "zeromq": "4.3.0"
   },
@@ -41,7 +40,7 @@
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
     "eslint-plugin-jsx-a11y": "^5.0.3",
-    "eslint-plugin-react": "^7.0.1",
+    "eslint-plugin-react": "^7.1.0",
     "jsdoc": "3.4.3",
     "mocha": "3.4.2",
     "nyc": "11.0.2"
