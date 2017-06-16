@@ -28,7 +28,7 @@ describe('ZBeacon', () => {
     const zBeacon = new ZBeacon({
       identity,
       mailbox: 51409,
-      broadcast: ZHelper.getIfData().broadcast,
+      ifaceData: ZHelper.getIfData(),
       zyrePeers: new Peers(),
     });
 
@@ -36,9 +36,8 @@ describe('ZBeacon', () => {
   });
 
   it('should start broadcasting the zre beacon, listen to foreign beacons and push discovered peers', (done) => {
-    const ifData = ZHelper.getIfData();
-    const address = ifData.address; // The local address, which is the sender of the udp package
-    const broadcast = ifData.broadcast;
+    const ifaceData = ZHelper.getIfData();
+    const address = ifaceData.address; // The local address, which is the sender of the udp package
 
     // Init Peer 1
     const identity = Buffer.alloc(16);
@@ -49,7 +48,7 @@ describe('ZBeacon', () => {
     const zBeacon = new ZBeacon({
       identity,
       mailbox,
-      broadcast,
+      ifaceData,
       zyrePeers,
     });
 
@@ -62,7 +61,7 @@ describe('ZBeacon', () => {
     const zBeacon2 = new ZBeacon({
       identity: identity2,
       mailbox: mailbox2,
-      broadcast,
+      ifaceData,
       zyrePeers: zyrePeers2,
     });
 
@@ -92,8 +91,8 @@ describe('ZBeacon', () => {
   });
 
   it('should discard corrupted udp packages', (done) => {
-    const ifData = ZHelper.getIfData();
-    const broadcast = ifData.broadcast;
+    const ifaceData = ZHelper.getIfData();
+    const broadcast = ifaceData.broadcast;
     const port = 5670;
 
     // Init Peer
@@ -105,7 +104,7 @@ describe('ZBeacon', () => {
     const zBeacon = new ZBeacon({
       identity,
       mailbox,
-      broadcast,
+      ifaceData,
       port,
       zyrePeers,
     });
@@ -157,7 +156,7 @@ describe('ZBeacon', () => {
     const zBeacon = new ZBeacon({
       identity,
       mailbox: 51409,
-      broadcast: ZHelper.getIfData().broadcast,
+      ifaceData: ZHelper.getIfData(),
       zyrePeers: new Peers(),
     });
 

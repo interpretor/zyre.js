@@ -22,6 +22,17 @@ describe('ZHelper', () => {
     assert.property(ifdata, 'broadcast');
   });
 
+  it('should check if an IP is in a subnet', () => {
+    let ip = '127.100.42.3';
+    const network = '127.100.42.0';
+    const netmask = '255.255.255.240';
+
+    assert.isTrue(ZHelper.ipInSubnet(ip, network, netmask));
+
+    ip = '127.100.42.16';
+    assert.isNotTrue(ZHelper.ipInSubnet(ip, network, netmask));
+  });
+
   it('should return a free TCP port', (done) => {
     const ifdata = ZHelper.getIfData();
     const p = 49152;
