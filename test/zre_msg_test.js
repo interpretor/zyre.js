@@ -209,6 +209,37 @@ describe('ZreMsg', () => {
     assert.isNotObject(recvMsg);
   });
 
+  it('should not throw errors on undefined groups and headers contents', () => {
+    const sequence = 1;
+    const endpoint = 'tcp://127.0.0.1:50100';
+    const groups = ['CHAT', undefined];
+    const status = 2;
+    const name = 'node';
+    const headers = {
+      foo: undefined,
+      star: 'fox',
+    };
+
+    const zreMsg = new ZreMsg(ZreMsg.HELLO, {
+      sequence,
+      endpoint,
+      groups,
+      status,
+      name,
+      headers,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getEndpoint(), endpoint);
+    assert.sameMembers(recvMsg.getGroups(), ['CHAT', '']);
+    assert.equal(recvMsg.getStatus(), status);
+    assert.equal(recvMsg.getName(), name);
+    assert.deepEqual(recvMsg.getHeaders(), { foo: '', star: 'fox' });
+  });
+
   it('should send a HELLO message with the given zeromq dealer socket', (done) => {
     const sequence = 1;
     const endpoint = 'tcp://127.0.0.1:42101';
