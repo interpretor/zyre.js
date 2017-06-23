@@ -30,13 +30,16 @@ npm install zyre.js
 
 A full jsdoc documentation can be found [here](https://interpretor.github.io/zyre.js/).
 
-The public API contains the following:
+## Usage
 
 ```js
 const zyre = require('zyre.js');
+```
 
-// Create a new zyre.js instance (arguments are optional)
-const z1 = zyre.new({
+Creates a new zyre.js instance (arguments are optional)
+
+```js
+const zyre1 = zyre.new({
   name: 'foo',      // Name of the zyre node
   iface: 'eth0',    // Network interface
   headers: {        // Headers will be sent on every new connection
@@ -47,80 +50,136 @@ const z1 = zyre.new({
   bport: 5670,      // Discovery beacon broadcast port
   binterval: 1000,  // Discovery beacon broadcast interval
 });
+```
 
-// Starts up the zyre.js instance. Async function, so you can register...
-z1.start(() => {
+Starts up the zyre.js instance. Must be called before any other function
+
+```js
+// Async function, so you can register...
+zyre1.start(() => {
   // ...a callback or
 }).then(() => {
   // ...a Promise
 });
+```
 
-// Stops the zyre.js instance. Async function, so you can register...
-z1.stop(() => {
+Stops the zyre.js instance. Deletes all peers data
+
+```js
+// Async function, so you can register...
+zyre1.stop(() => {
   // ...a callback or
 }).then(() => {
   // ...a Promise
 });
+```
 
-// Sends a private message to the peer with the given identity
-z1.whisper(identity, message);
+Sends a private message to the peer with the given identity
 
-// Sends a message to the group with the given name
-z1.shout(group, message);
+```js
+zyre1.whisper(identity, message);
+```
 
-// Joins the group with the given name
-z1.join(group);
+Sends a message to the group with the given name
 
-// Leaves the group with the given name
-z1.leave(group);
+```js
+zyre1.shout(group, message);
+```
 
-// Returns the identity of the local node
-z1.getIdentity();
+Joins the group with the given name
 
-// Returns information of the connected peer with the given identity
-z1.getPeer(identity);
+```js
+zyre1.join(group);
+```
 
-// Returns information of all connected peers
-z1.getPeers();
+Leaves the group with the given name
 
-// Returns information of the group with the given name
-z1.getGroup(name);
+```js
+zyre1.leave(group);
+```
 
-// Returns information of all known groups
-z1.getGroups();
+Returns the identity of the local node
 
-// Connect is fired when a new peer joins the network
-z1.on('connect', (id, name, headers) => {
+```js
+zyre1.getIdentity();
+```
+
+Returns information of the connected peer with the given identity
+
+```js
+zyre1.getPeer(identity);
+```
+
+Returns information of all connected peers
+
+```js
+zyre1.getPeers();
+```
+
+Returns information of the group with the given name
+
+```js
+zyre1.getGroup(name);
+```
+
+Returns information of all known groups
+
+```js
+zyre1.getGroups();
+```
+
+Connect is fired when a new peer joins the network
+
+```js
+zyre1.on('connect', (id, name, headers) => {
   // ...
 });
+```
 
-// Disconnect is fired when a peer disconnects from the network
-z1.on('disconnect', (id, name) => {
+Disconnect is fired when a peer disconnects from the network
+
+```js
+zyre1.on('disconnect', (id, name) => {
   // ...
 });
+```
 
-// Expired is fired when a peer timed out (uses expired timeout value)
-z1.on('expired', (id, name) => {
+Expired is fired when a peer timed out (uses expired timeout value)
+
+```js
+zyre1.on('expired', (id, name) => {
   // ...
 });
+```
 
-// Whisper is fired when a peer sends a private message
-z1.on('whisper', (id, name, message) => {
+Whisper is fired when a peer sends a private message
+
+```js
+zyre1.on('whisper', (id, name, message) => {
   // ...
 });
+```
 
-// Shout is fired when a peer sends a group message
-z1.on('shout', (id, name, message, group) => {
+Shout is fired when a peer sends a group message
+
+```js
+zyre1.on('shout', (id, name, message, group) => {
   // ...
 });
+```
 
-// Join is fired when a peer joins a group
-z1.on('join', (id, name, group) => {
+Join is fired when a peer joins a group
+
+```js
+zyre1.on('join', (id, name, group) => {
   // ...
 });
+```
 
-// Leave is fired when a peer leaves a group
-z1.on('leave', (id, name, group) => {
+Leave is fired when a peer leaves a group
+
+```js
+zyre1.on('leave', (id, name, group) => {
   // ...
 });
 ```
@@ -134,26 +193,34 @@ Inline example of two nodes talking to each other:
 ```js
 const zyre = require('zyre.js');
 
-const z1 = zyre.new({ name: 'z1' });
-const z2 = zyre.new({ name: 'z2' });
+const zyre1 = zyre.new({ name: 'Chris' });
+const zyre2 = zyre.new({ name: 'John' });
 
-z1.on('shout', (id, name, message, group) => {
-  console.log(`#${group} <${name}> ${message}`);
+zyre1.on('whisper', (id, name, message) => {
+  console.log(`<${name}> ${message}`);
 });
 
-z2.on('shout', (id, name, message, group) => {
+zyre2.on('shout', (id, name, message, group) => {
   console.log(`#${group} <${name}> ${message}`);
-  z2.shout('CHAT', 'Hey!');
+  zyre2.whisper(id, `Hello ${name}!`);
 });
 
-z1.start().then(() => {
-  z1.join('CHAT');
-  z2.start().then(() => {
-    z2.join('CHAT');
-  });
+zyre1.start(() => {
+  zyre1.join('CHAT');
+});
+
+zyre2.start(() => {
+  zyre2.join('CHAT');
 });
 
 setInterval(() => {
-  z1.shout('CHAT', 'Hello World!');
+  zyre1.shout('CHAT', 'Hello World!');
 }, 1000);
+```
+
+Prints:
+
+```
+#CHAT <Chris> Hello World!
+<John> Hello Chris!
 ```
