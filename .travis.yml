@@ -32,7 +32,7 @@ deploy:
   provider: pages
   skip_cleanup: true
   local_dir: docs
-  github_token: $GITHUB_TOKEN
+  github_token: $GH_TOKEN
   on:
     branch: master
     condition: $TRAVIS_OS_NAME = "linux"
