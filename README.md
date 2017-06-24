@@ -1,5 +1,7 @@
 # zyre.js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/interpretor/zyre.js.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/interpretor/zyre.js.svg?branch=master)](https://travis-ci.org/interpretor/zyre.js)
 [![Build status](https://ci.appveyor.com/api/projects/status/plddo0jv41aa04j6?svg=true)](https://ci.appveyor.com/project/interpretor/zyre-js)
 [![codecov](https://codecov.io/gh/interpretor/zyre.js/branch/master/graph/badge.svg)](https://codecov.io/gh/interpretor/zyre.js)
