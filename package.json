@@ -45,6 +45,9 @@
     "mocha": "^3.4.2",
     "nyc": "^11.0.2"
   },
+  "greenkeeper": {
+    "ignore": ["eslint"]
+  },
   "engines": {
     "node": ">=6.5.0"
   }
