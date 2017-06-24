@@ -15,16 +15,16 @@ env:
 
 before_install:
   - npm install -g npm@5
-  - npm install -g greenkeeper-lockfile@1
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then npm install -g greenkeeper-lockfile@1; fi
 
 before_script:
-  - greenkeeper-lockfile-update
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then greenkeeper-lockfile-update; fi
 
 script:
   - travis_retry npm run coverage
 
 after_success:
-  - greenkeeper-lockfile-upload
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then greenkeeper-lockfile-upload; fi
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
   - if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == false ]]; then npm run build:docs; fi
 
