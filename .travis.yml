@@ -13,10 +13,18 @@ env:
   global:
     - DEBUG=zyre*
 
+before_install:
+  - npm install -g npm@5
+  - npm install -g greenkeeper-lockfile@1
+
+before_script:
+  - greenkeeper-lockfile-update
+
 script:
   - travis_retry npm run coverage
 
 after_success:
+  - greenkeeper-lockfile-upload
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
   - if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == false ]]; then npm run build:docs; fi
 
