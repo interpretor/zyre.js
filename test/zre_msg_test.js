@@ -209,15 +209,21 @@ describe('ZreMsg', () => {
     assert.isNotObject(recvMsg);
   });
 
-  it('should not throw errors on undefined groups and headers contents', () => {
+  it('should convert different groups and headers content types to match the zre protocol', () => {
     const sequence = 1;
     const endpoint = 'tcp://127.0.0.1:50100';
-    const groups = ['CHAT', undefined];
+    const groups = ['CHAT', undefined, 2, 2.6, true];
     const status = 2;
     const name = 'node';
     const headers = {
-      foo: undefined,
       star: 'fox',
+      foo: undefined,
+      4: false,
+      float: 2.6,
+      2.6: 4,
+      obj: {
+        foo: 'bar',
+      },
     };
 
     const zreMsg = new ZreMsg(ZreMsg.HELLO, {
@@ -234,10 +240,17 @@ describe('ZreMsg', () => {
     assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
     assert.equal(recvMsg.getSequence(), sequence);
     assert.equal(recvMsg.getEndpoint(), endpoint);
-    assert.sameMembers(recvMsg.getGroups(), ['CHAT', '']);
+    assert.sameMembers(recvMsg.getGroups(), ['CHAT', 'undefined', '2', '2.6', 'true']);
     assert.equal(recvMsg.getStatus(), status);
     assert.equal(recvMsg.getName(), name);
-    assert.deepEqual(recvMsg.getHeaders(), { foo: '', star: 'fox' });
+    assert.deepEqual(recvMsg.getHeaders(), {
+      star: 'fox',
+      foo: 'undefined',
+      4: 'false',
+      float: '2.6',
+      2.6: '4',
+      obj: '[object Object]',
+    });
   });
 
   it('should send a HELLO message with the given zeromq dealer socket', (done) => {
