@@ -1,13 +1,12 @@
 language: node_js
+node_js: "6"
+sudo: false
 
 matrix:
   include:
     - os: linux
       dist: trusty
-      sudo: false
-      node_js: "6"
     - os: osx
-      node_js: "6"
 
 env:
   global:
