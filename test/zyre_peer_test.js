@@ -117,7 +117,7 @@ describe('ZyrePeer', () => {
     });
 
     const zyreGroup = new Group('CHAT');
-    zyrePeer._endpoint = 'tcp://127.0.0.1:42321';
+    zyrePeer._setEndpoint('tcp://127.0.0.1:42321');
 
     let hit = false;
 
@@ -144,7 +144,7 @@ describe('ZyrePeer', () => {
     });
 
     const zreMsg = new Msg();
-    zyrePeer._endpoint = 'tcp://127.0.0.1:42321';
+    zyrePeer._setEndpoint('tcp://127.0.0.1:42321');
 
     zyrePeer.connect();
     zyrePeer.send(zreMsg);
@@ -180,6 +180,8 @@ describe('ZyrePeer', () => {
     assert.equal(zyrePeer._endpoint, 'tcp://127.0.0.1:54321');
     zyrePeer.update({ mailbox: 56123 });
     assert.equal(zyrePeer._endpoint, 'tcp://127.0.0.1:54321');
+    zyrePeer.update({ endpoint: 'tcp://127.0.0.42:57142' });
+    assert.equal(zyrePeer._endpoint, 'tcp://127.0.0.42:57142');
     assert.isNotObject(zyrePeer.update({ address: '0.0.0.0', mailbox: 0 }));
     assert.isTrue(hit);
 
