@@ -253,6 +253,39 @@ describe('ZreMsg', () => {
     });
   });
 
+  it('should support utf8 multi-byte strings', () => {
+    const sequence = 1;
+    const endpoint = 'tcp://127.0.0.1:50100';
+    const groups = ['😄'];
+    const status = 1;
+    const name = '🚀';
+    const headers = {
+      byte1: 'o',
+      byte2: '©',
+      byte3: '™',
+      byte4: '👍',
+    };
+
+    const zreMsg = new ZreMsg(ZreMsg.HELLO, {
+      sequence,
+      endpoint,
+      groups,
+      status,
+      name,
+      headers,
+    });
+
+    const recvMsg = ZreMsg.read(zreMsg.toBuffer());
+
+    assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
+    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.getEndpoint(), endpoint);
+    assert.sameMembers(recvMsg.getGroups(), groups);
+    assert.equal(recvMsg.getStatus(), status);
+    assert.equal(recvMsg.getName(), name);
+    assert.deepEqual(recvMsg.getHeaders(), headers);
+  });
+
   it('should send a HELLO message with the given zeromq dealer socket', (done) => {
     const sequence = 1;
     const endpoint = 'tcp://127.0.0.1:42101';
