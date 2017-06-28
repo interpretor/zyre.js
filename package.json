@@ -1,6 +1,6 @@
 {
   "name": "zyre.js",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Node.js port of Zyre - an open-source framework for proximity-based peer-to-peer applications",
   "main": "index.js",
   "scripts": {
