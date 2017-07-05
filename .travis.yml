@@ -14,18 +14,18 @@ env:
 
 before_install:
   - npm install -g npm@5
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then npm install -g greenkeeper-lockfile@1; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then npm install -g greenkeeper-lockfile@1; fi
 
 before_script:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then greenkeeper-lockfile-update; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then greenkeeper-lockfile-update; fi
 
 script:
   - travis_retry npm run coverage
 
 after_success:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then greenkeeper-lockfile-upload; fi
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
-  - if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == false ]]; then npm run build:docs; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then greenkeeper-lockfile-upload; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash <(curl -s https://codecov.io/bash); fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then npm run build:docs; fi
 
 deploy:
   provider: pages
@@ -33,5 +33,5 @@ deploy:
   local_dir: docs
   github_token: $GH_TOKEN
   on:
-    branch: master
     condition: $TRAVIS_OS_NAME = "linux"
+    branch: master
