@@ -355,4 +355,61 @@ describe('Zyre', () => {
       });
     });
   });
+
+  it('should support different encodings for messages', (done) => {
+    const zyre1 = new Zyre();
+    const zyre2 = new Zyre();
+
+    let hit = 0;
+
+    zyre1.on('shout', (id, name, msg) => {
+      hit += 1;
+      if (hit === 1) assert.isTrue(Buffer.isBuffer(msg));
+      if (hit === 2) assert.strictEqual(msg, 'asdC$C6C<b\u0002,');
+      if (hit === 3) assert.strictEqual(msg, 'asdäöü€');
+      if (hit === 4) assert.strictEqual(msg, '跧꒍軬뚎諮芲');
+      if (hit === 5) assert.strictEqual(msg, '跧꒍軬뚎諮芲');
+      if (hit === 6) assert.strictEqual(msg, 'WVhOa3c2VER0c084NG9Lcw==');
+      if (hit === 7) assert.strictEqual(msg, 'asdÃÂ¤ÃÂ¶ÃÂ¼Ã¢ÂÂ¬');
+      if (hit === 8) assert.strictEqual(msg, '363137333634633361346333623663336263653238326163');
+      if (hit === 9) assert.strictEqual(msg, 'asdäöü€');
+    });
+
+    const stopAll = () => {
+      zyre2.stop().then(() => {
+        zyre1.stop().then(() => {
+          if (hit === 9) setTimeout(() => done(), 100);
+        });
+      });
+    };
+
+    function sendMessage(encoding) {
+      zyre1.setEncoding(encoding);
+
+      if (encoding === null) {
+        zyre2.shout('CHAT', Buffer.from('asdäöü€'));
+      } else if (encoding === 'garbish') {
+        zyre2.shout('CHAT', 'asdäöü€');
+      } else {
+        zyre2.shout('CHAT', Buffer.from('asdäöü€').toString(encoding));
+      }
+    }
+
+    zyre1.start().then(() => {
+      zyre1.join('CHAT');
+      zyre2.start().then(() => {
+        zyre2.join('CHAT');
+        setTimeout(() => sendMessage(null), 50);
+        setTimeout(() => sendMessage('ascii'), 100);
+        setTimeout(() => sendMessage('utf8'), 150);
+        setTimeout(() => sendMessage('utf16le'), 200);
+        setTimeout(() => sendMessage('ucs2'), 250);
+        setTimeout(() => sendMessage('base64'), 300);
+        setTimeout(() => sendMessage('binary'), 350);
+        setTimeout(() => sendMessage('hex'), 400);
+        setTimeout(() => sendMessage('garbish'), 450);
+        setTimeout(stopAll, 500);
+      });
+    });
+  });
 });

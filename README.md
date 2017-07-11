@@ -129,6 +129,14 @@ Returns information of all known groups
 zyre.getGroups();
 ```
 
+Sets the encoding of received messages. Defaults to utf8
+
+```js
+zyre.setEncoding('utf8'); // Default encoding
+zyre.setEncoding(null);   // Receive raw Buffers as messages
+// Available encodings: ascii, utf8, utf16le/ucs2, base64, binary, hex, raw/null
+```
+
 Connect is fired when a new peer joins the network
 
 ```js
