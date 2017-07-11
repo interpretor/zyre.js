@@ -1,31 +1,27 @@
 language: node_js
 node_js: "6"
+
+os: linux
+dist: trusty
 sudo: false
 
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-    - os: osx
-
 env:
-  global:
-    - DEBUG=zyre*
+  - DEBUG=zyre*
 
 before_install:
   - npm install -g npm@5
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then npm install -g greenkeeper-lockfile@1; fi
+  - npm install -g greenkeeper-lockfile@1
 
 before_script:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then greenkeeper-lockfile-update; fi
+  - greenkeeper-lockfile-update
 
 script:
   - travis_retry npm run coverage
 
 after_success:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then greenkeeper-lockfile-upload; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash <(curl -s https://codecov.io/bash); fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then npm run build:docs; fi
+  - greenkeeper-lockfile-upload
+  - bash <(curl -s https://codecov.io/bash)
+  - npm run build:docs
 
 deploy:
   provider: pages
@@ -33,5 +29,4 @@ deploy:
   local_dir: docs
   github_token: $GH_TOKEN
   on:
-    condition: $TRAVIS_OS_NAME = "linux"
     branch: master
