@@ -34,13 +34,13 @@ A full jsdoc documentation can be found [here](https://interpretor.github.io/zyr
 ## Usage
 
 ```js
-const zyre = require('zyre.js');
+const Zyre = require('zyre.js');
 ```
 
 Creates a new zyre.js instance (arguments are optional)
 
 ```js
-const zyre1 = zyre.new({
+const zyre = new Zyre({
   name: 'foo',      // Name of the zyre node
   iface: 'eth0',    // Network interface
   headers: {        // Headers will be sent on every new connection
@@ -57,7 +57,7 @@ Starts up the zyre.js instance. Must be called before any other function
 
 ```js
 // Async function, so you can register...
-zyre1.start(() => {
+zyre.start(() => {
   // ...a callback or
 }).then(() => {
   // ...a Promise
@@ -68,7 +68,7 @@ Stops the zyre.js instance. Deletes all peers data
 
 ```js
 // Async function, so you can register...
-zyre1.stop(() => {
+zyre.stop(() => {
   // ...a callback or
 }).then(() => {
   // ...a Promise
@@ -78,61 +78,61 @@ zyre1.stop(() => {
 Sends a private message to the peer with the given identity
 
 ```js
-zyre1.whisper(identity, message);
+zyre.whisper(identity, message);
 ```
 
 Sends a message to the group with the given name
 
 ```js
-zyre1.shout(group, message);
+zyre.shout(group, message);
 ```
 
 Joins the group with the given name
 
 ```js
-zyre1.join(group);
+zyre.join(group);
 ```
 
 Leaves the group with the given name
 
 ```js
-zyre1.leave(group);
+zyre.leave(group);
 ```
 
 Returns the identity of the local node
 
 ```js
-zyre1.getIdentity();
+zyre.getIdentity();
 ```
 
 Returns information of the connected peer with the given identity
 
 ```js
-zyre1.getPeer(identity);
+zyre.getPeer(identity);
 ```
 
 Returns information of all connected peers
 
 ```js
-zyre1.getPeers();
+zyre.getPeers();
 ```
 
 Returns information of the group with the given name
 
 ```js
-zyre1.getGroup(name);
+zyre.getGroup(name);
 ```
 
 Returns information of all known groups
 
 ```js
-zyre1.getGroups();
+zyre.getGroups();
 ```
 
 Connect is fired when a new peer joins the network
 
 ```js
-zyre1.on('connect', (id, name, headers) => {
+zyre.on('connect', (id, name, headers) => {
   // ...
 });
 ```
@@ -140,7 +140,7 @@ zyre1.on('connect', (id, name, headers) => {
 Disconnect is fired when a peer disconnects from the network
 
 ```js
-zyre1.on('disconnect', (id, name) => {
+zyre.on('disconnect', (id, name) => {
   // ...
 });
 ```
@@ -148,7 +148,7 @@ zyre1.on('disconnect', (id, name) => {
 Expired is fired when a peer timed out (uses expired timeout value)
 
 ```js
-zyre1.on('expired', (id, name) => {
+zyre.on('expired', (id, name) => {
   // ...
 });
 ```
@@ -156,7 +156,7 @@ zyre1.on('expired', (id, name) => {
 Whisper is fired when a peer sends a private message
 
 ```js
-zyre1.on('whisper', (id, name, message) => {
+zyre.on('whisper', (id, name, message) => {
   // ...
 });
 ```
@@ -164,7 +164,7 @@ zyre1.on('whisper', (id, name, message) => {
 Shout is fired when a peer sends a group message
 
 ```js
-zyre1.on('shout', (id, name, message, group) => {
+zyre.on('shout', (id, name, message, group) => {
   // ...
 });
 ```
@@ -172,7 +172,7 @@ zyre1.on('shout', (id, name, message, group) => {
 Join is fired when a peer joins a group
 
 ```js
-zyre1.on('join', (id, name, group) => {
+zyre.on('join', (id, name, group) => {
   // ...
 });
 ```
@@ -180,7 +180,7 @@ zyre1.on('join', (id, name, group) => {
 Leave is fired when a peer leaves a group
 
 ```js
-zyre1.on('leave', (id, name, group) => {
+zyre.on('leave', (id, name, group) => {
   // ...
 });
 ```
@@ -192,36 +192,41 @@ There is a sample chat package that can be found [here](https://github.com/inter
 Inline example of two nodes talking to each other:
 
 ```js
-const zyre = require('zyre.js');
+const Zyre = require('zyre.js');
 
-const zyre1 = zyre.new({ name: 'Chris' });
-const zyre2 = zyre.new({ name: 'John' });
+const chris = new Zyre({ name: 'Chris' });
+const john = new Zyre({ name: 'John' });
 
-zyre1.on('whisper', (id, name, message) => {
-  console.log(`<${name}> ${message}`);
+chris.on('connect', () => {
+  chris.shout('CHAT', 'Hello World');
 });
 
-zyre2.on('shout', (id, name, message, group) => {
-  console.log(`#${group} <${name}> ${message}`);
-  zyre2.whisper(id, `Hello ${name}!`);
+chris.on('whisper', (id, name, message) => {
+  console.log(`${name}: ${message}`);
 });
 
-zyre1.start(() => {
-  zyre1.join('CHAT');
+chris.start(() => {
+  chris.join('CHAT');
 });
 
-zyre2.start(() => {
-  zyre2.join('CHAT');
+john.on('shout', (id, name, message, group) => {
+  console.log(`(${group}) ${name}: ${message}`);
+  john.whisper(id, `Hello ${name}`);
 });
 
-setInterval(() => {
-  zyre1.shout('CHAT', 'Hello World!');
-}, 1000);
+john.start(() => {
+  john.join('CHAT');
+});
+
+setTimeout(() => {
+  chris.stop();
+  john.stop();
+}, 200);
 ```
 
 Prints:
 
-```
-#CHAT <Chris> Hello World!
-<John> Hello Chris!
+```bash
+(CHAT) Chris: Hello World
+John: Hello Chris
 ```
