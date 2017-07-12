@@ -37,7 +37,7 @@ A full jsdoc documentation can be found [here](https://interpretor.github.io/zyr
 const Zyre = require('zyre.js');
 ```
 
-Creates a new zyre.js instance (arguments are optional)
+Creates a new zyre.js instance. (arguments are optional)
 
 ```js
 const zyre = new Zyre({
@@ -53,7 +53,7 @@ const zyre = new Zyre({
 });
 ```
 
-Starts up the zyre.js instance. Must be called before any other function
+Starts up the zyre.js instance. Must be called before any other function.
 
 ```js
 // Async function, so you can register...
@@ -64,7 +64,7 @@ zyre.start(() => {
 });
 ```
 
-Stops the zyre.js instance. Deletes all peers data
+Stops the zyre.js instance. Deletes all peers data.
 
 ```js
 // Async function, so you can register...
@@ -75,69 +75,71 @@ zyre.stop(() => {
 });
 ```
 
-Sends a private message to the peer with the given identity
+Sends a private message to the peer with the given identity.
+The message can be a string or a raw buffer.
 
 ```js
 zyre.whisper(identity, message);
 ```
 
-Sends a message to the group with the given name
+Sends a message to the group with the given name.
+The message can be a string or a raw buffer.
 
 ```js
 zyre.shout(group, message);
 ```
 
-Joins the group with the given name
+Joins the group with the given name.
 
 ```js
 zyre.join(group);
 ```
 
-Leaves the group with the given name
+Leaves the group with the given name.
 
 ```js
 zyre.leave(group);
 ```
 
-Returns the identity of the local node
+Returns the identity of the local node. The identity is a 16 byte UUID as hex string.
 
 ```js
 zyre.getIdentity();
 ```
 
-Returns information of the connected peer with the given identity
+Returns information of the connected peer with the given identity.
 
 ```js
 zyre.getPeer(identity);
 ```
 
-Returns information of all connected peers
+Returns information of all connected peers.
 
 ```js
 zyre.getPeers();
 ```
 
-Returns information of the group with the given name
+Returns information of the group with the given name.
 
 ```js
 zyre.getGroup(name);
 ```
 
-Returns information of all known groups
+Returns information of all known groups.
 
 ```js
 zyre.getGroups();
 ```
 
-Sets the encoding of received messages. Defaults to utf8
+Sets the encoding of received messages. Defaults to utf8.
+Available are: `ascii`, `utf8`, `utf16le`/`ucs2`, `base64`, `binary`, `hex`, `raw`/`null`
 
 ```js
-zyre.setEncoding('utf8'); // Default encoding
-zyre.setEncoding(null);   // Receive raw Buffers as messages
-// Available encodings: ascii, utf8, utf16le/ucs2, base64, binary, hex, raw/null
+zyre.setEncoding('utf8');   // Default encoding
+zyre.setEncoding(null);     // Raw buffers
 ```
 
-Connect is fired when a new peer joins the network
+Connect is fired when a new peer joins the network.
 
 ```js
 zyre.on('connect', (id, name, headers) => {
@@ -145,7 +147,7 @@ zyre.on('connect', (id, name, headers) => {
 });
 ```
 
-Disconnect is fired when a peer disconnects from the network
+Disconnect is fired when a peer disconnects from the network.
 
 ```js
 zyre.on('disconnect', (id, name) => {
@@ -153,7 +155,7 @@ zyre.on('disconnect', (id, name) => {
 });
 ```
 
-Expired is fired when a peer timed out (uses expired timeout value)
+Expired is fired when a peer timed out. (uses expired timeout value)
 
 ```js
 zyre.on('expired', (id, name) => {
@@ -161,7 +163,7 @@ zyre.on('expired', (id, name) => {
 });
 ```
 
-Whisper is fired when a peer sends a private message
+Whisper is fired when a peer sends a private message.
 
 ```js
 zyre.on('whisper', (id, name, message) => {
@@ -169,7 +171,7 @@ zyre.on('whisper', (id, name, message) => {
 });
 ```
 
-Shout is fired when a peer sends a group message
+Shout is fired when a peer sends a group message.
 
 ```js
 zyre.on('shout', (id, name, message, group) => {
@@ -177,7 +179,7 @@ zyre.on('shout', (id, name, message, group) => {
 });
 ```
 
-Join is fired when a peer joins a group
+Join is fired when a peer joins a group.
 
 ```js
 zyre.on('join', (id, name, group) => {
@@ -185,7 +187,7 @@ zyre.on('join', (id, name, group) => {
 });
 ```
 
-Leave is fired when a peer leaves a group
+Leave is fired when a peer leaves a group.
 
 ```js
 zyre.on('leave', (id, name, group) => {
@@ -225,11 +227,6 @@ john.on('shout', (id, name, message, group) => {
 john.start(() => {
   john.join('CHAT');
 });
-
-setTimeout(() => {
-  chris.stop();
-  john.stop();
-}, 200);
 ```
 
 Prints:
