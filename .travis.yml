@@ -16,7 +16,7 @@ before_script:
   - greenkeeper-lockfile-update
 
 script:
-  - travis_retry npm run coverage
+  - npm run coverage
 
 after_success:
   - greenkeeper-lockfile-upload
