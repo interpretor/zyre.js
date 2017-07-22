@@ -8,18 +8,10 @@ sudo: false
 env:
   - DEBUG=zyre*
 
-before_install:
-  - npm install -g npm@5
-  - npm install -g greenkeeper-lockfile@1
-
-before_script:
-  - greenkeeper-lockfile-update
-
 script:
   - npm run coverage
 
 after_success:
-  - greenkeeper-lockfile-upload
   - bash <(curl -s https://codecov.io/bash)
   - npm run build:docs
 

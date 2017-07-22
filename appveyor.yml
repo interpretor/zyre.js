@@ -3,13 +3,11 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g npm@5
   - npm install
 
 test_script:
   - node --version
   - npm --version
-  - set DEBUG=zyre*
-  - npm run coverage
+  - set DEBUG=zyre* & npm run coverage
 
 build: off
