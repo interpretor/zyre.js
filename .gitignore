@@ -2,10 +2,9 @@
 Thumbs.db
 
 node_modules
-playground
-.vscode
-
-docs
 .nyc_output
 coverage
-package-lock.json
+docs
+
+.vscode
+playground
