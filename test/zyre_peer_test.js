@@ -19,20 +19,16 @@ describe('ZyrePeer', () => {
       this.peers = {};
     }
 
-    getName() {
-      return this.name;
-    }
-
     add(zyrePeer) {
-      if (typeof this.peers[zyrePeer.getIdentity()] === 'undefined') {
-        this.peers[zyrePeer.getIdentity()] = zyrePeer;
+      if (typeof this.peers[zyrePeer.identity] === 'undefined') {
+        this.peers[zyrePeer.identity] = zyrePeer;
         zyrePeer.addToGroup(this);
       }
     }
 
     remove(zyrePeer) {
-      if (typeof this.peers[zyrePeer.getIdentity()] !== 'undefined') {
-        delete this.peers[zyrePeer.getIdentity()];
+      if (typeof this.peers[zyrePeer.identity] !== 'undefined') {
+        delete this.peers[zyrePeer.identity];
         zyrePeer.removeFromGroup(this);
       }
     }
@@ -42,11 +38,6 @@ describe('ZyrePeer', () => {
 
   // ZreMsg mock
   class Msg {
-    setSequence(sequence) {
-      this.sequence = sequence;
-      assert.equal(this.sequence, 1);
-    }
-
     send(socket) {
       msgHit += 1;
       this.socket = socket;
@@ -69,7 +60,7 @@ describe('ZyrePeer', () => {
     assert.instanceOf(zyrePeer, ZyrePeer);
     assert.isDefined(zyrePeer._evasive);
     assert.isDefined(zyrePeer._expired);
-    assert.equal(zyrePeer.getIdentity(), '12345');
+    assert.equal(zyrePeer.identity, '12345');
 
     const evasive = 1000;
     const expired = 2000;
@@ -84,7 +75,7 @@ describe('ZyrePeer', () => {
     assert.instanceOf(zyrePeer2, ZyrePeer);
     assert.equal(zyrePeer2._evasive, evasive);
     assert.equal(zyrePeer2._expired, expired);
-    assert.equal(zyrePeer2.getIdentity(), '56789');
+    assert.equal(zyrePeer2.identity, '56789');
   });
 
   it('should add/remove the ZyrePeer to/from a group', () => {
@@ -189,10 +180,10 @@ describe('ZyrePeer', () => {
     assert.equal(zyrePeer._status, 5);
 
     zyrePeer.update({ name: 'foobar' });
-    assert.equal(zyrePeer.getName(), 'foobar');
+    assert.equal(zyrePeer.name, 'foobar');
 
     zyrePeer.update({ headers: { foo: 'bar' } });
-    assert.deepEqual(zyrePeer.getHeaders(), { foo: 'bar' });
+    assert.deepEqual(zyrePeer.headers, { foo: 'bar' });
 
     zyrePeer._clearTimeouts();
   });

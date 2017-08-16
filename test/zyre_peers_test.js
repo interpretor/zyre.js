@@ -16,11 +16,6 @@ describe('ZyrePeers', () => {
 
   // ZreMsg mock
   class Msg {
-    setSequence(sequence) {
-      this.sequence = sequence;
-      assert.equal(this.sequence, 1);
-    }
-
     send(socket) {
       msgHit += 1;
       this.socket = socket;

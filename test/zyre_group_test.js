@@ -20,20 +20,16 @@ describe('ZyreGroup', () => {
       this.groups = {};
     }
 
-    getIdentity() {
-      return this.identity;
-    }
-
     addToGroup(group) {
-      if (typeof this.groups[group.getName()] === 'undefined') {
-        this.groups[group.getName()] = group;
+      if (typeof this.groups[group.name] === 'undefined') {
+        this.groups[group.name] = group;
         group.add(this);
       }
     }
 
     removeFromGroup(group) {
-      if (typeof this.groups[group.getName()] !== 'undefined') {
-        delete this.groups[group.getName()];
+      if (typeof this.groups[group.name] !== 'undefined') {
+        delete this.groups[group.name];
         group.remove(this);
       }
     }
@@ -51,15 +47,12 @@ describe('ZyreGroup', () => {
 
   // ZreMsg mock
   class Msg {
-    setGroup(group) {
-      this.group = group;
-    }
   }
 
   it('should create an instance of ZyreGroup', () => {
     const zyreGroup = new ZyreGroup('CHAT');
     assert.instanceOf(zyreGroup, ZyreGroup);
-    assert.equal(zyreGroup.getName(), 'CHAT');
+    assert.equal(zyreGroup.name, 'CHAT');
   });
 
   it('should add/remove a peer to/from the ZyreGroup', () => {

@@ -38,13 +38,13 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getEndpoint(), endpoint);
-    assert.sameMembers(recvMsg.getGroups(), groups);
-    assert.equal(recvMsg.getStatus(), status);
-    assert.equal(recvMsg.getName(), name);
-    assert.deepEqual(recvMsg.getHeaders(), headers);
+    assert.equal(recvMsg.cmd, ZreMsg.HELLO);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.endpoint, endpoint);
+    assert.sameMembers(recvMsg.groups, groups);
+    assert.equal(recvMsg.status, status);
+    assert.equal(recvMsg.name, name);
+    assert.deepEqual(recvMsg.headers, headers);
   });
 
   it('should not create a new HELLO message if sequence is not 1', () => {
@@ -83,9 +83,9 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer(), content);
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.WHISPER);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getContent(), content);
+    assert.equal(recvMsg.cmd, ZreMsg.WHISPER);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.content, content);
   });
 
   it('should create a new SHOUT message and validate the output buffer', () => {
@@ -101,10 +101,10 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer(), content);
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.SHOUT);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getGroup(), group);
-    assert.equal(recvMsg.getContent(), content);
+    assert.equal(recvMsg.cmd, ZreMsg.SHOUT);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.group, group);
+    assert.equal(recvMsg.content, content);
   });
 
   it('should create a new JOIN message and validate the output buffer', () => {
@@ -120,10 +120,10 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.JOIN);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getGroup(), group);
-    assert.equal(recvMsg.getStatus(), status);
+    assert.equal(recvMsg.cmd, ZreMsg.JOIN);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.group, group);
+    assert.equal(recvMsg.status, status);
   });
 
   it('should create a new LEAVE message and validate the output buffer', () => {
@@ -139,10 +139,10 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.LEAVE);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getGroup(), group);
-    assert.equal(recvMsg.getStatus(), status);
+    assert.equal(recvMsg.cmd, ZreMsg.LEAVE);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.group, group);
+    assert.equal(recvMsg.status, status);
   });
 
   it('should create a new PING message and validate the output buffer', () => {
@@ -154,8 +154,8 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.PING);
-    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.cmd, ZreMsg.PING);
+    assert.equal(recvMsg.sequence, sequence);
   });
 
   it('should create a new PING_OK message and validate the output buffer', () => {
@@ -167,8 +167,8 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.PING_OK);
-    assert.equal(recvMsg.getSequence(), sequence);
+    assert.equal(recvMsg.cmd, ZreMsg.PING_OK);
+    assert.equal(recvMsg.sequence, sequence);
   });
 
   it('should discard reading corrupted messages', () => {
@@ -237,13 +237,13 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getEndpoint(), endpoint);
-    assert.sameMembers(recvMsg.getGroups(), ['CHAT', 'undefined', '2', '2.6', 'true']);
-    assert.equal(recvMsg.getStatus(), status);
-    assert.equal(recvMsg.getName(), name);
-    assert.deepEqual(recvMsg.getHeaders(), {
+    assert.equal(recvMsg.cmd, ZreMsg.HELLO);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.endpoint, endpoint);
+    assert.sameMembers(recvMsg.groups, ['CHAT', 'undefined', '2', '2.6', 'true']);
+    assert.equal(recvMsg.status, status);
+    assert.equal(recvMsg.name, name);
+    assert.deepEqual(recvMsg.headers, {
       star: 'fox',
       foo: 'undefined',
       4: 'false',
@@ -277,13 +277,13 @@ describe('ZreMsg', () => {
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
-    assert.equal(recvMsg.getSequence(), sequence);
-    assert.equal(recvMsg.getEndpoint(), endpoint);
-    assert.sameMembers(recvMsg.getGroups(), groups);
-    assert.equal(recvMsg.getStatus(), status);
-    assert.equal(recvMsg.getName(), name);
-    assert.deepEqual(recvMsg.getHeaders(), headers);
+    assert.equal(recvMsg.cmd, ZreMsg.HELLO);
+    assert.equal(recvMsg.sequence, sequence);
+    assert.equal(recvMsg.endpoint, endpoint);
+    assert.sameMembers(recvMsg.groups, groups);
+    assert.equal(recvMsg.status, status);
+    assert.equal(recvMsg.name, name);
+    assert.deepEqual(recvMsg.headers, headers);
   });
 
   it('should send a HELLO message with the given zeromq dealer socket', (done) => {
@@ -316,13 +316,13 @@ describe('ZreMsg', () => {
     router.on('message', (id, msg) => {
       const recvMsg = ZreMsg.read(msg);
 
-      assert.equal(recvMsg.getCmd(), ZreMsg.HELLO);
-      assert.equal(recvMsg.getSequence(), sequence);
-      assert.equal(recvMsg.getEndpoint(), endpoint);
-      assert.sameMembers(recvMsg.getGroups(), groups);
-      assert.equal(recvMsg.getStatus(), status);
-      assert.equal(recvMsg.getName(), name);
-      assert.deepEqual(recvMsg.getHeaders(), headers);
+      assert.equal(recvMsg.cmd, ZreMsg.HELLO);
+      assert.equal(recvMsg.sequence, sequence);
+      assert.equal(recvMsg.endpoint, endpoint);
+      assert.sameMembers(recvMsg.groups, groups);
+      assert.equal(recvMsg.status, status);
+      assert.equal(recvMsg.name, name);
+      assert.deepEqual(recvMsg.headers, headers);
 
       hit = true;
     });
@@ -360,9 +360,9 @@ describe('ZreMsg', () => {
     router.on('message', (id, msg, frame) => {
       const recvMsg = ZreMsg.read(msg, frame);
 
-      assert.equal(recvMsg.getCmd(), ZreMsg.WHISPER);
-      assert.equal(recvMsg.getSequence(), sequence);
-      assert.equal(recvMsg.getContent(), content);
+      assert.equal(recvMsg.cmd, ZreMsg.WHISPER);
+      assert.equal(recvMsg.sequence, sequence);
+      assert.equal(recvMsg.content, content);
 
       hit = true;
     });
@@ -392,14 +392,14 @@ describe('ZreMsg', () => {
       status,
     });
 
-    zreMsg.setGroup('BAR');
-    zreMsg.setSequence(42);
+    zreMsg.group = 'BAR';
+    zreMsg.sequence = 42;
 
     const recvMsg = ZreMsg.read(zreMsg.toBuffer());
 
-    assert.equal(recvMsg.getCmd(), ZreMsg.JOIN);
-    assert.equal(recvMsg.getSequence(), 42);
-    assert.equal(recvMsg.getGroup(), 'BAR');
-    assert.equal(recvMsg.getStatus(), status);
+    assert.equal(recvMsg.cmd, ZreMsg.JOIN);
+    assert.equal(recvMsg.sequence, 42);
+    assert.equal(recvMsg.group, 'BAR');
+    assert.equal(recvMsg.status, status);
   });
 });
