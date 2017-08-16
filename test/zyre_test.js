@@ -11,11 +11,13 @@ const Zyre = require('../lib/zyre');
 
 describe('Zyre', () => {
   it('should create a new instance of Zyre', () => {
-    const zyre = new Zyre();
+    const zyre = new Zyre({ name: 'foo' });
     assert.instanceOf(zyre, Zyre);
+    assert.equal(zyre._name, 'foo');
 
-    const zyre2 = Zyre.new();
+    const zyre2 = Zyre.new({ name: 'foo' });
     assert.instanceOf(zyre2, Zyre);
+    assert.equal(zyre2._name, 'foo');
   });
 
   it('should throw an error if interface data could not be found', () => {
