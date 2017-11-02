@@ -20,6 +20,7 @@ describe('ZHelper', () => {
     const ifdata = ZHelper.getIfData();
     assert.propertyVal(ifdata, 'family', 'IPv4');
     assert.property(ifdata, 'broadcast');
+    assert.property(ifdata, 'network');
   });
 
   it('should check if an IP is in a subnet', () => {
