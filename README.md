@@ -37,7 +37,7 @@ A full jsdoc documentation can be found [here](https://interpretor.github.io/zyr
 const Zyre = require('zyre.js');
 ```
 
-Creates a new zyre.js instance. (arguments are optional)
+Creates a new zyre.js instance (arguments are optional).
 
 ```js
 const zyre = new Zyre({
@@ -48,6 +48,7 @@ const zyre = new Zyre({
   },
   evasive: 5000,    // Timeout after which the local node will try to ping a not responding peer
   expired: 30000,   // Timeout after which a not responding peer gets disconnected
+  port: 49152,      // Port for incoming messages, will be incremented if already in use
   bport: 5670,      // Discovery beacon broadcast port
   binterval: 1000,  // Discovery beacon broadcast interval
 });
