@@ -4,7 +4,7 @@
   "description": "Node.js port of Zyre - an open-source framework for proximity-based peer-to-peer applications",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --slow 700 --timeout 1400 --use_strict --check-leaks --throw-deprecation",
+    "test": "mocha --slow 700 --timeout 1400 --check-leaks --throw-deprecation",
     "precoverage": "nyc npm test",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "build:docs": "jsdoc -R README.md -d docs lib/*.js"
@@ -42,7 +42,7 @@
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.3.0",
     "jsdoc": "^3.5.4",
-    "mocha": "^5.0.0",
+    "mocha": "^6.0.0",
     "nyc": "^13.3.0"
   },
   "greenkeeper": {
