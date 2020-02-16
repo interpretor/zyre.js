@@ -3,6 +3,7 @@ node_js: lts/*
 
 os: linux
 dist: xenial
+arch: arm64
 
 env:
   - DEBUG=zyre*
