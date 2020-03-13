@@ -6,7 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const assert = require('chai').assert;
+/* eslint-disable max-classes-per-file */
+
+const { assert } = require('chai');
 const uuid = require('uuid');
 const zeromq = require('zeromq');
 const ZyrePeer = require('../lib/zyre_peer');

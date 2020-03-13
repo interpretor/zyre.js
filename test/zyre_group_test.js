@@ -6,7 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const assert = require('chai').assert;
+/* eslint-disable max-classes-per-file */
+
+const { assert } = require('chai');
 const EventEmitter = require('events');
 const ZyreGroup = require('../lib/zyre_group');
 

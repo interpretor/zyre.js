@@ -30,28 +30,24 @@
   },
   "homepage": "https://github.com/interpretor/zyre.js#readme",
   "dependencies": {
-    "debug": "^4.0.1",
-    "uuid": "^7.0.0",
-    "zeromq": "^5.0.0"
+    "debug": "^4.1.1",
+    "uuid": "^7.0.2",
+    "zeromq": "^5.2.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^4.6.1",
-    "eslint-config-airbnb": "^15.1.0",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.3.0",
-    "jsdoc": "^3.5.4",
-    "mocha": "^7.0.1",
+    "chai": "^4.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "jsdoc": "^3.6.3",
+    "mocha": "^7.1.0",
     "nyc": "^15.0.0"
   },
   "greenkeeper": {
     "ignore": [
       "eslint",
-      "eslint-config-airbnb",
-      "eslint-plugin-import",
-      "eslint-plugin-jsx-a11y",
-      "eslint-plugin-react"
+      "eslint-config-airbnb-base",
+      "eslint-plugin-import"
     ]
   },
   "engines": {

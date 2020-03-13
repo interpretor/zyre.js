@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const assert = require('chai').assert;
+const { assert } = require('chai');
 const uuid = require('uuid');
 const dgram = require('dgram');
 const EventEmitter = require('events');
@@ -37,7 +37,7 @@ describe('ZBeacon', () => {
 
   it('should start broadcasting the zre beacon, listen to foreign beacons and push discovered peers', (done) => {
     const ifaceData = ZHelper.getIfData();
-    const address = ifaceData.address; // The local address, which is the sender of the udp package
+    const { address } = ifaceData; // The local address, which is the sender of the udp package
 
     // Init Peer 1
     const identity = Buffer.alloc(16);
@@ -92,7 +92,7 @@ describe('ZBeacon', () => {
 
   it('should discard corrupted udp packages', (done) => {
     const ifaceData = ZHelper.getIfData();
-    const broadcast = ifaceData.broadcast;
+    const { broadcast } = ifaceData;
     const port = 5670;
 
     // Init Peer

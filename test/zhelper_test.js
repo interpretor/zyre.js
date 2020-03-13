@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const assert = require('chai').assert;
+const { assert } = require('chai');
 const net = require('net');
 const ZHelper = require('../lib/zhelper');
 

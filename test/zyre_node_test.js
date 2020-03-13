@@ -6,7 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const assert = require('chai').assert;
+/* eslint-disable max-classes-per-file */
+
+const { assert } = require('chai');
 const uuid = require('uuid');
 const ZyreNode = require('../lib/zyre_node');
 const ZreMsg = require('../lib/zre_msg');
@@ -40,8 +42,22 @@ describe('ZyreNode', () => {
       return this.exist;
     }
 
-    push({ identity, sequence, endpoint, status, name, headers }) {
-      this.data = { identity, sequence, endpoint, status, name, headers };
+    push({
+      identity,
+      sequence,
+      endpoint,
+      status,
+      name,
+      headers,
+    }) {
+      this.data = {
+        identity,
+        sequence,
+        endpoint,
+        status,
+        name,
+        headers,
+      };
       return new Peer();
     }
   }
