@@ -21,10 +21,18 @@ Zyre.js provides peer discovery and reliable (group) messaging over local area n
 
 Zyre.js implements the [ZRE](https://rfc.zeromq.org/spec:36/ZRE/) protocol.
 
+Zyre.js 2.x is currently available as beta, which uses the rewritten zeromq.js 6.x
+
 ## Installation
 
 ```bash
 npm install zyre.js
+```
+
+Beta:
+
+```bash
+npm install zyre.js@2.0.0-beta.0
 ```
 
 ## Documentation
