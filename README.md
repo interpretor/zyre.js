@@ -32,7 +32,7 @@ npm install zyre.js
 Beta:
 
 ```bash
-npm install zyre.js@2.0.0-beta.0
+npm install zyre.js@beta
 ```
 
 ## Documentation
