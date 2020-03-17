@@ -31,8 +31,8 @@
   "homepage": "https://github.com/interpretor/zyre.js#readme",
   "dependencies": {
     "debug": "^4.1.1",
-    "uuid": "^8.0.0",
-    "zeromq": "^5.2.0"
+    "uuid": "^7.0.2",
+    "zeromq": "^6.0.0-beta.6"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -44,6 +44,6 @@
     "nyc": "^15.0.0"
   },
   "engines": {
-    "node": ">=6.5.0"
+    "node": ">=10.2.0"
   }
 }

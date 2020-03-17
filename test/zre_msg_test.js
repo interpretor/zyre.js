@@ -306,16 +306,17 @@ describe('ZreMsg', () => {
       headers,
     });
 
-    const router = zeromq.socket('router');
-    const dealer = zeromq.socket('dealer');
+    const router = new zeromq.Router();
+    const dealer = new zeromq.Dealer({ routingId: 'foo' });
 
     const address = 'tcp://127.0.0.1:42421';
 
     let hit = false;
 
-    router.on('message', (id, msg) => {
+    router.receive().then(([id, msg]) => {
       const recvMsg = ZreMsg.read(msg);
 
+      assert.equal('foo', id);
       assert.equal(recvMsg.cmd, ZreMsg.HELLO);
       assert.equal(recvMsg.sequence, sequence);
       assert.equal(recvMsg.endpoint, endpoint);
@@ -327,18 +328,19 @@ describe('ZreMsg', () => {
       hit = true;
     });
 
-    router.bindSync(address);
-    dealer.connect(address);
+    router.bind(address).then(() => {
+      dealer.connect(address);
 
-    const stopAll = () => {
-      router.close();
-      dealer.close();
-      if (hit) setTimeout(() => { done(); }, 100);
-    };
+      const stopAll = () => {
+        router.close();
+        dealer.close();
+        if (hit) setTimeout(() => { done(); }, 100);
+      };
 
-    zreMsg.send(dealer);
+      zreMsg.send(dealer);
 
-    setTimeout(stopAll, 100);
+      setTimeout(stopAll, 100);
+    });
   });
 
   it('should send a WHISPER message with the given zeromq dealer socket', (done) => {
@@ -350,16 +352,17 @@ describe('ZreMsg', () => {
       content,
     });
 
-    const router = zeromq.socket('router');
-    const dealer = zeromq.socket('dealer');
+    const router = new zeromq.Router();
+    const dealer = new zeromq.Dealer({ routingId: 'foo' });
 
     const address = 'tcp://127.0.0.1:42422';
 
     let hit = false;
 
-    router.on('message', (id, msg, frame) => {
+    router.receive().then(([id, msg, frame]) => {
       const recvMsg = ZreMsg.read(msg, frame);
 
+      assert.equal('foo', id);
       assert.equal(recvMsg.cmd, ZreMsg.WHISPER);
       assert.equal(recvMsg.sequence, sequence);
       assert.equal(recvMsg.content, content);
@@ -367,18 +370,19 @@ describe('ZreMsg', () => {
       hit = true;
     });
 
-    router.bindSync(address);
-    dealer.connect(address);
+    router.bind(address).then(() => {
+      dealer.connect(address);
 
-    const stopAll = () => {
-      router.close();
-      dealer.close();
-      if (hit) setTimeout(() => { done(); }, 100);
-    };
+      const stopAll = () => {
+        router.close();
+        dealer.close();
+        if (hit) setTimeout(() => { done(); }, 100);
+      };
 
-    zreMsg.send(dealer);
+      zreMsg.send(dealer);
 
-    setTimeout(stopAll, 100);
+      setTimeout(stopAll, 100);
+    });
   });
 
   it('should set the sequence and group', () => {
