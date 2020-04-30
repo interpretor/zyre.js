@@ -1,15 +1,13 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
+
   build:
 
     runs-on: ubuntu-latest
@@ -26,5 +24,23 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run coverage
-    - run: npm run build:docs
-    - uses: codecov/codecov-action@v1
+    - name: Codecov
+      uses: codecov/codecov-action@v1
+
+  release:
+    
+    if: ${{ github.ref == 'master' }}
+    needs: build
+    
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [12.x]
+    
+    steps:
+      - run: npm run build:docs
+      - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v1.4.1
+        with:
+          build_dir: docs
