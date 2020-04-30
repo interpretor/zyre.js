@@ -27,3 +27,4 @@ jobs:
     - run: npm install
     - run: npm run coverage
     - run: npm run build:docs
+    - uses: codecov/codecov-action@v1
