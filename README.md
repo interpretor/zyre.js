@@ -1,7 +1,6 @@
 # zyre.js
 
 [![Test](https://github.com/interpretor/zyre.js/workflows/Test/badge.svg)](https://github.com/interpretor/zyre.js/actions?query=workflow%3ATest)
-[![codecov](https://codecov.io/gh/interpretor/zyre.js/branch/master/graph/badge.svg)](https://codecov.io/gh/interpretor/zyre.js)
 
 Node.js port of [Zyre](https://github.com/zeromq/zyre) - an open-source framework for proximity-based peer-to-peer applications
 
