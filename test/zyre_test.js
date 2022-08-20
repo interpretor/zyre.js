@@ -9,6 +9,8 @@
 const { assert } = require('chai');
 const Zyre = require('../lib/zyre');
 
+const IFACE = '127.0.0.1';
+
 describe('Zyre', () => {
   it('should create a new instance of Zyre', () => {
     const zyre = new Zyre({ name: 'foo' });
@@ -27,15 +29,15 @@ describe('Zyre', () => {
       const zyre = new Zyre({ name: 'zyre1', iface: 'foobar123' });
       zyre.getIdentity();
     } catch (err) {
-      if (err.message === 'Could not find IPv4 broadcast interface data') hit = true;
+      if (err.message === 'Could not find a valid IPv4 interface with given parameters') hit = true;
     }
 
     assert.isTrue(hit);
   });
 
   it('should inform about connected peers', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2', headers: { foo: 'bar' } });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE, headers: { foo: 'bar' } });
 
     let hit = false;
 
@@ -62,8 +64,8 @@ describe('Zyre', () => {
   });
 
   it('should inform about disconnected peers', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
 
     let hit = false;
 
@@ -92,8 +94,8 @@ describe('Zyre', () => {
   });
 
   it('should communicate with WHISPER messages', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
 
     let hit = false;
 
@@ -132,9 +134,9 @@ describe('Zyre', () => {
   });
 
   it('should communicate with SHOUT messages', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
-    const zyre3 = new Zyre({ name: 'zyre3' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
+    const zyre3 = new Zyre({ name: 'zyre3', iface: IFACE });
 
     let hit1 = false;
     let hit2 = false;
@@ -183,8 +185,8 @@ describe('Zyre', () => {
   });
 
   it('should join a group and send JOIN messages', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
 
     let hit = false;
 
@@ -217,8 +219,8 @@ describe('Zyre', () => {
   });
 
   it('should leave a group and send LEAVE messages', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
 
     let hit = false;
 
@@ -256,8 +258,8 @@ describe('Zyre', () => {
   });
 
   it('should return ZyrePeer(s) informations', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
 
     let hit = false;
 
@@ -287,8 +289,8 @@ describe('Zyre', () => {
   });
 
   it('should return ZyreGroup(s) informations', (done) => {
-    const zyre1 = new Zyre({ name: 'zyre1' });
-    const zyre2 = new Zyre({ name: 'zyre2' });
+    const zyre1 = new Zyre({ name: 'zyre1', iface: IFACE });
+    const zyre2 = new Zyre({ name: 'zyre2', iface: IFACE });
 
     let hit = false;
 
@@ -322,8 +324,19 @@ describe('Zyre', () => {
     const evasive = 200;
     const expired = 400;
 
-    const zyre1 = new Zyre({ name: 'zyre1', evasive, expired });
-    const zyre2 = new Zyre({ name: 'zyre2', evasive, expired });
+    const zyre1 = new Zyre({
+      name: 'zyre1',
+      iface: IFACE,
+      evasive,
+      expired,
+    });
+
+    const zyre2 = new Zyre({
+      name: 'zyre2',
+      iface: IFACE,
+      evasive,
+      expired,
+    });
 
     let hit = false;
 
@@ -359,8 +372,8 @@ describe('Zyre', () => {
   });
 
   it('should support different encodings for messages', (done) => {
-    const zyre1 = new Zyre();
-    const zyre2 = new Zyre();
+    const zyre1 = new Zyre({ iface: IFACE });
+    const zyre2 = new Zyre({ iface: IFACE });
 
     let hit = 0;
 

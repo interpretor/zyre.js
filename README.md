@@ -1,7 +1,6 @@
 # zyre.js
 
 [![Test](https://github.com/interpretor/zyre.js/workflows/Test/badge.svg)](https://github.com/interpretor/zyre.js/actions?query=workflow%3ATest)
-[![codecov](https://codecov.io/gh/interpretor/zyre.js/branch/master/graph/badge.svg)](https://codecov.io/gh/interpretor/zyre.js)
 
 Node.js port of [Zyre](https://github.com/zeromq/zyre) - an open-source framework for proximity-based peer-to-peer applications
 
@@ -48,7 +47,7 @@ Creates a new zyre.js instance (arguments are optional).
 ```js
 const zyre = new Zyre({
   name: 'foo',      // Name of the zyre node
-  iface: 'eth0',    // Network interface
+  iface: 'eth0',    // Network interface or IPv4 address
   headers: {        // Headers will be sent on every new connection
     foo: 'bar',
   },

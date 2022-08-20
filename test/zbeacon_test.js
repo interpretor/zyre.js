@@ -13,6 +13,8 @@ const EventEmitter = require('events');
 const ZHelper = require('../lib/zhelper');
 const ZBeacon = require('../lib/zbeacon');
 
+const IFACE = '127.0.0.1';
+
 describe('ZBeacon', () => {
   // ZyrePeers mock
   class Peers extends EventEmitter {
@@ -36,7 +38,7 @@ describe('ZBeacon', () => {
   });
 
   it('should start broadcasting the zre beacon, listen to foreign beacons and push discovered peers', (done) => {
-    const ifaceData = ZHelper.getIfData();
+    const ifaceData = ZHelper.getIfData(IFACE);
     const { address } = ifaceData; // The local address, which is the sender of the udp package
 
     // Init Peer 1
@@ -91,7 +93,7 @@ describe('ZBeacon', () => {
   });
 
   it('should discard corrupted udp packages', (done) => {
-    const ifaceData = ZHelper.getIfData();
+    const ifaceData = ZHelper.getIfData(IFACE);
     const { broadcast } = ifaceData;
     const port = 5670;
 
