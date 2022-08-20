@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>zyre.js</h1>
+<p><a href="https://github.com/interpretor/zyre.js/actions?query=workflow%3ATest"><img src="https://github.com/interpretor/zyre.js/workflows/Test/badge.svg" alt="Test"></a></p>
+<p>Node.js port of <a href="https://github.com/zeromq/zyre">Zyre</a> - an open-source framework for proximity-based peer-to-peer applications</p>
+<h2>Description</h2>
+<p>Zyre.js provides peer discovery and reliable (group) messaging over local area networks. Some of the key features:</p>
+<ul>
+<li>Zyre.js works without administration or configuration</li>
+<li>Peers can join or leave the network at any time</li>
+<li>Peers can communicate directly with each other; no central server or message broker needed</li>
+<li>Peers can join groups</li>
+<li>Zyre.js loses no message, even when the network is under heavy load</li>
+<li>Zyre.js is designed to be used in WiFi networks (but can also be used in Ethernet networks)</li>
+<li>Peer discovery usually takes less than a second</li>
+</ul>
+<p>Zyre.js implements the <a href="https://rfc.zeromq.org/spec:36/ZRE/">ZRE</a> protocol.</p>
+<p>Zyre.js 2.x is currently available as beta, which uses the rewritten zeromq.js 6.x</p>
+<h2>Installation</h2>
+<pre class="prettyprint source lang-bash"><code>npm install zyre.js
+</code></pre>
+<p>Beta:</p>
+<pre class="prettyprint source lang-bash"><code>npm install zyre.js@beta
+</code></pre>
+<h2>Documentation</h2>
+<p>A full jsdoc documentation can be found <a href="https://interpretor.github.io/zyre.js/">here</a>.</p>
+<h2>Usage</h2>
+<pre class="prettyprint source lang-js"><code>const Zyre = require('zyre.js');
+</code></pre>
+<p>Creates a new zyre.js instance (arguments are optional).</p>
+<pre class="prettyprint source lang-js"><code>const zyre = new Zyre({
+  name: 'foo',      // Name of the zyre node
+  iface: 'eth0',    // Network interface or IPv4 address
+  headers: {        // Headers will be sent on every new connection
+    foo: 'bar',
+  },
+  evasive: 5000,    // Timeout after which the local node will try to ping a not responding peer
+  expired: 30000,   // Timeout after which a not responding peer gets disconnected
+  port: 49152,      // Port for incoming messages, will be incremented if already in use
+  bport: 5670,      // Discovery beacon broadcast port
+  binterval: 1000,  // Discovery beacon broadcast interval
+});
+</code></pre>
+<p>Starts up the zyre.js instance. Must be called before any other function.</p>
+<pre class="prettyprint source lang-js"><code>// Async function, so you can register...
+zyre.start(() => {
+  // ...a callback or
+}).then(() => {
+  // ...a Promise
+});
+</code></pre>
+<p>Stops the zyre.js instance. Deletes all peers data.</p>
+<pre class="prettyprint source lang-js"><code>// Async function, so you can register...
+zyre.stop(() => {
+  // ...a callback or
+}).then(() => {
+  // ...a Promise
+});
+</code></pre>
+<p>Sends a private message to the peer with the given identity.
+The message can be a string or a raw buffer.</p>
+<pre class="prettyprint source lang-js"><code>zyre.whisper(identity, message);
+</code></pre>
+<p>Sends a message to the group with the given name.
+The message can be a string or a raw buffer.</p>
+<pre class="prettyprint source lang-js"><code>zyre.shout(group, message);
+</code></pre>
+<p>Joins the group with the given name.</p>
+<pre class="prettyprint source lang-js"><code>zyre.join(group);
+</code></pre>
+<p>Leaves the group with the given name.</p>
+<pre class="prettyprint source lang-js"><code>zyre.leave(group);
+</code></pre>
+<p>Returns the identity of the local node. The identity is a 16 byte UUID as hex string.</p>
+<pre class="prettyprint source lang-js"><code>zyre.getIdentity();
+</code></pre>
+<p>Returns information of the connected peer with the given identity.</p>
+<pre class="prettyprint source lang-js"><code>zyre.getPeer(identity);
+</code></pre>
+<p>Returns information of all connected peers.</p>
+<pre class="prettyprint source lang-js"><code>zyre.getPeers();
+</code></pre>
+<p>Returns information of the group with the given name.</p>
+<pre class="prettyprint source lang-js"><code>zyre.getGroup(name);
+</code></pre>
+<p>Returns information of all known groups.</p>
+<pre class="prettyprint source lang-js"><code>zyre.getGroups();
+</code></pre>
+<p>Sets the encoding of received messages. Defaults to utf8.
+Available are: <code>ascii</code>, <code>utf8</code>, <code>utf16le</code>/<code>ucs2</code>, <code>base64</code>, <code>binary</code>, <code>hex</code>, <code>raw</code>/<code>null</code></p>
+<pre class="prettyprint source lang-js"><code>zyre.setEncoding('utf8');   // Default encoding
+zyre.setEncoding(null);     // Raw buffers
+</code></pre>
+<p>Connect is fired when a new peer joins the network.</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('connect', (id, name, headers) => {
+  // ...
+});
+</code></pre>
+<p>Disconnect is fired when a peer disconnects from the network.</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('disconnect', (id, name) => {
+  // ...
+});
+</code></pre>
+<p>Expired is fired when a peer timed out. (uses expired timeout value)</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('expired', (id, name) => {
+  // ...
+});
+</code></pre>
+<p>Whisper is fired when a peer sends a private message.</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('whisper', (id, name, message) => {
+  // ...
+});
+</code></pre>
+<p>Shout is fired when a peer sends a group message.</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('shout', (id, name, message, group) => {
+  // ...
+});
+</code></pre>
+<p>Join is fired when a peer joins a group.</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('join', (id, name, group) => {
+  // ...
+});
+</code></pre>
+<p>Leave is fired when a peer leaves a group.</p>
+<pre class="prettyprint source lang-js"><code>zyre.on('leave', (id, name, group) => {
+  // ...
+});
+</code></pre>
+<h2>Examples</h2>
+<p>There is a sample chat package that can be found <a href="https://github.com/interpretor/zyre-chat">here</a>.</p>
+<p>Inline example of two nodes talking to each other:</p>
+<pre class="prettyprint source lang-js"><code>const Zyre = require('zyre.js');
+
+const chris = new Zyre({ name: 'Chris' });
+const john = new Zyre({ name: 'John' });
+
+chris.on('connect', () => {
+  chris.shout('CHAT', 'Hello World');
+});
+
+chris.on('whisper', (id, name, message) => {
+  console.log(`${name}: ${message}`);
+});
+
+chris.start(() => {
+  chris.join('CHAT');
+});
+
+john.on('shout', (id, name, message, group) => {
+  console.log(`(${group}) ${name}: ${message}`);
+  john.whisper(id, `Hello ${name}`);
+});
+
+john.start(() => {
+  john.join('CHAT');
+});
+</code></pre>
+<p>Prints:</p>
+<pre class="prettyprint source lang-bash"><code>(CHAT) Chris: Hello World
+John: Hello Chris
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ZBeacon.html">ZBeacon</a></li><li><a href="ZHelper.html">ZHelper</a></li><li><a href="ZreMsg.html">ZreMsg</a></li><li><a href="Zyre.html">Zyre</a></li><li><a href="ZyreGroup.html">ZyreGroup</a></li><li><a href="ZyreGroups.html">ZyreGroups</a></li><li><a href="ZyreNode.html">ZyreNode</a></li><li><a href="ZyrePeer.html">ZyrePeer</a></li><li><a href="ZyrePeers.html">ZyrePeers</a></li></ul><h3>Events</h3><ul><li><a href="Zyre.html#event:connect">connect</a></li><li><a href="Zyre.html#event:disconnect">disconnect</a></li><li><a href="Zyre.html#event:expired">expired</a></li><li><a href="Zyre.html#event:join">join</a></li><li><a href="Zyre.html#event:leave">leave</a></li><li><a href="Zyre.html#event:shout">shout</a></li><li><a href="Zyre.html#event:whisper">whisper</a></li><li><a href="ZyreNode.html#event:hello">hello</a></li><li><a href="ZyreNode.html#event:join">join</a></li><li><a href="ZyreNode.html#event:leave">leave</a></li><li><a href="ZyreNode.html#event:shout">shout</a></li><li><a href="ZyreNode.html#event:whisper">whisper</a></li><li><a href="ZyrePeer.html#event:disconnect">disconnect</a></li><li><a href="ZyrePeer.html#event:expired">expired</a></li><li><a href="ZyrePeers.html#event:disconnect">disconnect</a></li><li><a href="ZyrePeers.html#event:expired">expired</a></li><li><a href="ZyrePeers.html#event:new">new</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Aug 20 2022 13:57:02 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: zhelper.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: zhelper.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * Copyright (c) 2017 Sebastian Rager
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+const os = require('os');
+const net = require('net');
+
+/**
+ * ZHelper contains some necessary static helper methods.
+ */
+class ZHelper {
+  /**
+   * @typedef {object} IfaceData
+   * @property {string} address - IP address
+   * @property {string} netmask - Netmask
+   * @property {string} family - IPv4 or IPv6
+   * @property {string} mac - MAC address
+   * @property {boolean} internal - Internal or external
+   * @property {string} network - Network address
+   * @property {string} broadcast - Broadcast address
+   */
+
+  /**
+   * Returns IPv4 interface data from the given interface or IPv4 address, or searches for a public
+   * interface with an assigned IPv4. Also calculates the network and broadcast address of the
+   * interface.
+   *
+   * @param {string} [iface] - Optional interface or IPv4 address to check
+   * @return {IfaceData}
+   */
+  static getIfData(iface) {
+    const ifaces = os.networkInterfaces();
+    if (typeof ifaces === 'undefined') return undefined;
+
+    // Iterate over all interfaces if no interface has been passed
+    if (typeof iface === 'undefined') {
+      let ifdata;
+
+      Object.keys(ifaces).some((i) => {
+        const x = this.getIfData(i);
+        if (typeof x !== 'undefined' &amp;&amp; !x.internal) ifdata = x;
+        return typeof ifdata !== 'undefined';
+      });
+
+      return ifdata;
+    }
+
+    const selIface = ifaces[iface];
+
+    // Check if an address has been passed as iface, if the selected iface could not be found
+    if (typeof selIface === 'undefined') {
+      let ifdata;
+
+      Object.keys(ifaces).some((i) => {
+        const x = this.getIfData(i);
+        if (typeof x !== 'undefined' &amp;&amp; x.address === iface) ifdata = x;
+        return typeof ifdata !== 'undefined';
+      });
+
+      return ifdata;
+    }
+
+    let ifdata;
+
+    Object.keys(selIface).some((i) => {
+      if (selIface[i].family === 'IPv4') ifdata = selIface[i];
+      return typeof ifdata !== 'undefined';
+    });
+
+    if (typeof ifdata === 'undefined') return undefined;
+
+    const addressArr = ifdata.address.split('.');
+    const netmaskArr = ifdata.netmask.split('.');
+    let network = '';
+    let broadcast = '';
+
+    addressArr.forEach((e, i) => {
+      network += (e &amp; netmaskArr[i]);
+      broadcast += (e | (netmaskArr[i] ^ 255));
+      if (i &lt; addressArr.length - 1) {
+        network += '.';
+        broadcast += '.';
+      }
+    });
+
+    ifdata.network = network;
+    ifdata.broadcast = broadcast;
+
+    return ifdata;
+  }
+
+  /**
+   * Checks if a given IP is in the subnet of the given network address and netmask.
+   *
+   * @param {string} ip - Ip that should be checked
+   * @param {string} network - Network address
+   * @param {string} netmask - Netmask
+   * @return {boolean}
+   */
+  static ipInSubnet(ip, network, netmask) {
+    const ipArr = ip.split('.');
+    const netmaskArr = netmask.split('.');
+    let calcNet = '';
+
+    ipArr.forEach((e, i) => {
+      calcNet += e &amp; netmaskArr[i];
+      if (i &lt; ipArr.length - 1) calcNet += '.';
+    });
+
+    return calcNet === network;
+  }
+
+  /**
+   * Finds a free TCP port starting from the given port, incremented by one.
+   *
+   * @param {string} address - Address to search on
+   * @param {number} port - Port to start searching from
+   * @return {Promise.&lt;port>}
+   */
+  static getFreePort(address, port) {
+    const server = net.createServer();
+
+    return new Promise((resolve) => {
+      server.on('error', () => {
+        server.close(() => {
+          this.getFreePort(address, port + 1).then((portRec) => {
+            resolve(portRec);
+          });
+        });
+      });
+
+      server.listen(port, address, () => {
+        server.close(() => {
+          resolve(port);
+        });
+      });
+    });
+  }
+}
+
+module.exports = ZHelper;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ZBeacon.html">ZBeacon</a></li><li><a href="ZHelper.html">ZHelper</a></li><li><a href="ZreMsg.html">ZreMsg</a></li><li><a href="Zyre.html">Zyre</a></li><li><a href="ZyreGroup.html">ZyreGroup</a></li><li><a href="ZyreGroups.html">ZyreGroups</a></li><li><a href="ZyreNode.html">ZyreNode</a></li><li><a href="ZyrePeer.html">ZyrePeer</a></li><li><a href="ZyrePeers.html">ZyrePeers</a></li></ul><h3>Events</h3><ul><li><a href="Zyre.html#event:connect">connect</a></li><li><a href="Zyre.html#event:disconnect">disconnect</a></li><li><a href="Zyre.html#event:expired">expired</a></li><li><a href="Zyre.html#event:join">join</a></li><li><a href="Zyre.html#event:leave">leave</a></li><li><a href="Zyre.html#event:shout">shout</a></li><li><a href="Zyre.html#event:whisper">whisper</a></li><li><a href="ZyreNode.html#event:hello">hello</a></li><li><a href="ZyreNode.html#event:join">join</a></li><li><a href="ZyreNode.html#event:leave">leave</a></li><li><a href="ZyreNode.html#event:shout">shout</a></li><li><a href="ZyreNode.html#event:whisper">whisper</a></li><li><a href="ZyrePeer.html#event:disconnect">disconnect</a></li><li><a href="ZyrePeer.html#event:expired">expired</a></li><li><a href="ZyrePeers.html#event:disconnect">disconnect</a></li><li><a href="ZyrePeers.html#event:expired">expired</a></li><li><a href="ZyrePeers.html#event:new">new</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Aug 20 2022 13:57:02 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
