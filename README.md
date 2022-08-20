@@ -47,7 +47,7 @@ Creates a new zyre.js instance (arguments are optional).
 ```js
 const zyre = new Zyre({
   name: 'foo',      // Name of the zyre node
-  iface: 'eth0',    // Network interface
+  iface: 'eth0',    // Network interface or IPv4 address
   headers: {        // Headers will be sent on every new connection
     foo: 'bar',
   },
