@@ -11,8 +11,11 @@ jobs:
     strategy:
       matrix:
         node-version:
+          - 8.9.0
           - 10.x
           - 12.x
+          - 14.x
+          - 16.x
 
     steps:
       - name: Checkout
